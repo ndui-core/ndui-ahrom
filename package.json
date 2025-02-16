@@ -1,6 +1,6 @@
 {
   "name": "nextjs-ahrom-library",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A UI library for Next.js using DaisyUI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
