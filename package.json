@@ -22,9 +22,9 @@
   "files": ["dist", "src"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/nextjs-daisyui-library.git"
+    "url": "https://github.com/khaleghimilad75/nextjs-ui-library.git"
   },
   "keywords": ["nextjs", "daisyui", "tailwindcss", "ui-library"],
-  "author": "Reza",
+  "author": "Milad Khaleghi",
   "license": "MIT"
 }
