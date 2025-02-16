@@ -1,0 +1,30 @@
+{
+  "name": "nextjs-ahrom-library",
+  "version": "0.0.1",
+  "description": "A UI library for Next.js using DaisyUI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "daisyui": "^3.0.0",
+    "tailwindcss": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
+  },
+  "files": ["dist", "src"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/nextjs-daisyui-library.git"
+  },
+  "keywords": ["nextjs", "daisyui", "tailwindcss", "ui-library"],
+  "author": "Reza",
+  "license": "MIT"
+}
