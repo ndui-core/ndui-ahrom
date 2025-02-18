@@ -3,14 +3,18 @@ import React from "react";
 interface InputProps {
   label?: string;
   error?: string;
+  value?: string;
+  onChange: (option: any) => void;
   className?: string;
   variant?: "bordered" | "ghost" | "primary";
   size?: "xs" | "sm" | "md" | "lg";
 }
 
 const Input: React.FC<InputProps> = ({
+  value,
   label,
   error,
+  onChange,
   variant = "bordered",
   size = "md",
   className = "",
@@ -27,7 +31,7 @@ const Input: React.FC<InputProps> = ({
           <span className="label-text">{label}</span>
         </label>
       )}
-      <input className={baseClass} {...props} />
+      <input onChange={onChange} className={baseClass} {...props} />
       {error && (
         <label className="label">
           <span className="label-text-alt text-error">{error}</span>

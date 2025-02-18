@@ -5,7 +5,7 @@ interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 
   error?: string;
   className?: string;
   color?: 'primary' | 'secondary' | 'accent';
-  size?: 'xs' | 'sm' | 'md' | 'lg';
+  size?: any;
 }
 
 const Slider: React.FC<SliderProps> = ({

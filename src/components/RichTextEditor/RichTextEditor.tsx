@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Button } from '../Button/Button';
+import Button from '../Button/Button';
 
 interface RichTextEditorProps {
   content: string;

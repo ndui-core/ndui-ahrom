@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '../Button/Button';
+import Button from '../Button/Button';
 
 interface MenuItem {
   id: string;

@@ -9,44 +9,58 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "daisyui": "^3.0.0",
-    "tailwindcss": "^3.0.0",
+    "@floating-ui/react": "^0.25.4",
     "@hookform/resolvers": "^3.3.2",
-    "zod": "^3.22.4",
-    "i18next": "^23.7.6",
-    "react-i18next": "^13.5.0",
-    "framer-motion": "^10.16.5",
-    "date-fns": "^2.30.0",
-    "react-datepicker": "^4.21.0",
-    "tiptap": "^1.32.2",
     "@tiptap/react": "^2.1.12",
     "@tiptap/starter-kit": "^2.1.12",
-    "react-dropzone": "^14.2.3",
-    "react-select": "^5.8.0",
-    "recharts": "^2.9.3",
-    "react-intersection-observer": "^9.5.3",
-    "react-window": "^1.8.9",
-    "@floating-ui/react": "^0.25.4",
+    "ag-grid-community": "^31.0.1",
+    "ag-grid-react": "^31.3.4",
+    "daisyui": "^3.0.0",
+    "date-fns": "^2.30.0",
     "focus-trap-react": "^10.2.3",
+    "framer-motion": "^10.16.5",
+    "i18next": "^23.7.6",
+    "react": ">=16.8.0",
+    "react-datepicker": "^4.21.0",
+    "react-dom": ">=16.8.0",
+    "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.48.2",
+    "react-i18next": "^13.5.0",
+    "react-intersection-observer": "^9.5.3",
+    "react-select": "^5.8.0",
+    "react-window": "^1.8.9",
+    "recharts": "^2.9.3",
     "swiper": "^11.0.5",
-    "ag-grid-react": "^31.0.1",
-    "ag-grid-community": "^31.0.1"
+    "tailwindcss": "^3.0.0",
+    "tiptap": "^1.32.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "typescript": "^4.9.0",
+    "@types/node": "^20.10.0",
     "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
     "@types/react-datepicker": "^4.19.3",
-    "@types/react-window": "^1.8.8"
+    "@types/react-dom": "^18.0.0",
+    "@types/react-window": "^1.8.8",
+    "typescript": "^4.9.0"
   },
-  "files": ["dist", "src"],
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/khaleghimilad75/nextjs-ui-library.git"
   },
-  "keywords": ["nextjs", "daisyui", "tailwindcss", "ui-library"],
+  "keywords": [
+    "nextjs",
+    "daisyui",
+    "tailwindcss",
+    "ui-library"
+  ],
   "author": "Milad Khaleghi",
   "license": "MIT"
 }

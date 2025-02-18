@@ -9,7 +9,7 @@ interface Option {
 interface AutocompleteProps {
   options: Option[];
   value: Option | null;
-  onChange: (option: Option | null) => void;
+  onChange: (option: any) => void;
   isMulti?: boolean;
   isLoading?: boolean;
   label?: string;

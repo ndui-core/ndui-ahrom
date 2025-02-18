@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '../Button/Button';
-import { Input } from '../Input/Input';
-import { Select } from '../Select/Select';
+import Button from '../Button/Button';
+import Input from '../Input/Input';
+import Select from '../Select/Select';
 
 export interface Column {
   name: string;
@@ -227,13 +227,13 @@ const Table: React.FC<TableProps> = ({
                   </div>
                   {column.filterable && (
                     <Input
-                      placeholder={`Filter ${column.label}`}
+                    
                       value={filters[column.field] || ''}
-                      onChange={(e) => setFilters(prev => ({
+                      onChange={(e: { target: { value: any; }; }) => setFilters(prev => ({
                         ...prev,
                         [column.field]: e.target.value
                       }))}
-                      onClick={(e) => e.stopPropagation()}
+                      
                       aria-label={`Filter ${column.label}`}
                       size="xs"
                       className="mt-2 w-full"
