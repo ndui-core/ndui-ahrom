@@ -33,7 +33,7 @@ const Chip: React.FC<ChipProps> = ({
       ${className}
     `}>
       {icon && <span>{icon}</span>}
-      }
+      
       {label}
       {onDelete && (
         <button

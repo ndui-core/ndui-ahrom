@@ -28,13 +28,13 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
                 className="flex items-center gap-2"
               >
                 {item.icon && <span>{item.icon}</span>}
-                }
+                
                 {item.label}
               </a>
             ) : (
               <span className="flex items-center gap-2">
                 {item.icon && <span>{item.icon}</span>}
-                }
+                
                 {item.label}
               </span>
             )}

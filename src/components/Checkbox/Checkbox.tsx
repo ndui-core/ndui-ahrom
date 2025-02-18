@@ -21,7 +21,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
           {...props}
         />
         {label && <span className="label-text ml-2">{label}</span>}
-        }
+        
       </label>
       {error && (
         <label className="label">

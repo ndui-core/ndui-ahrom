@@ -41,7 +41,7 @@ const TreeItem: React.FC<{
           </span>
         )}
         {node.icon && <span>{node.icon}</span>}
-        }
+        
         <span>{node.label}</span>
       </div>
       

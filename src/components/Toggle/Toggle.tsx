@@ -4,7 +4,7 @@ interface ToggleProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 
   label?: string;
   error?: string;
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: undefined;
   color?: 'primary' | 'secondary' | 'accent';
 }
 
@@ -30,7 +30,7 @@ const Toggle: React.FC<ToggleProps> = ({
           {...props}
         />
         {label && <span className="label-text ml-2">{label}</span>}
-        }
+        
       </label>
       {error && (
         <label className="label">
