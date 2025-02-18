@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Button } from '../Button/Button';
 
 interface MenuItem {
   id: string;
@@ -53,11 +54,9 @@ const Menu: React.FC<MenuProps> = ({
               {item.divider ? (
                 <div className="my-2 border-t border-base-300" />
               ) : (
-                <button
-                  className={`
-                    w-full px-4 py-2 text-left flex items-center gap-2
-                    ${item.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-base-200'}
-                  `}
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
                   onClick={() => {
                     if (!item.disabled) {
                       item.onClick?.();
@@ -66,10 +65,9 @@ const Menu: React.FC<MenuProps> = ({
                   }}
                   disabled={item.disabled}
                 >
-                  {item.icon && <span>{item.icon}</span>}
-                  }
+                  {item.icon && <span className="mr-2">{item.icon}</span>}
                   {item.label}
-                </button>
+                </Button>
               )}
             </React.Fragment>
           ))}

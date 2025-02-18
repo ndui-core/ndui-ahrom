@@ -1,5 +1,8 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '../Button/Button';
+import { Input } from '../Input/Input';
+import { Select } from '../Select/Select';
 
 export interface Column {
   name: string;
@@ -223,9 +226,7 @@ const Table: React.FC<TableProps> = ({
                     )}
                   </div>
                   {column.filterable && (
-                    <input
-                      type="text"
-                      className="input input-xs input-bordered mt-2 w-full"
+                    <Input
                       placeholder={`Filter ${column.label}`}
                       value={filters[column.field] || ''}
                       onChange={(e) => setFilters(prev => ({
@@ -234,6 +235,8 @@ const Table: React.FC<TableProps> = ({
                       }))}
                       onClick={(e) => e.stopPropagation()}
                       aria-label={`Filter ${column.label}`}
+                      size="xs"
+                      className="mt-2 w-full"
                     />
                   )}
                   <div
@@ -298,8 +301,9 @@ const Table: React.FC<TableProps> = ({
                     )}
                     {expandable && (
                       <td role="cell">
-                        <button
-                          className="btn btn-ghost btn-xs"
+                        <Button
+                          variant="ghost"
+                          size="xs"
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleRowExpansion(row.id);
@@ -308,7 +312,7 @@ const Table: React.FC<TableProps> = ({
                           aria-label={`Expand row ${rowIndex + 1}`}
                         >
                           {expandedRows.includes(row.id) ? '▼' : '▶'}
-                        </button>
+                        </Button>
                       </td>
                     )}
                     {columns.map((column) => (
@@ -357,21 +361,19 @@ const Table: React.FC<TableProps> = ({
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
           <div className="flex items-center gap-2">
             <span>Rows per page:</span>
-            <select
-              className="select select-bordered select-sm"
-              value={rowsPerPage}
+            <Select
+              options={rowsPerPageOptions.map(option => ({
+                value: option.toString(),
+                label: option.toString()
+              }))}
+              value={rowsPerPage.toString()}
               onChange={(e) => {
                 setRowsPerPage(Number(e.target.value));
                 setCurrentPage(1);
               }}
-              aria-label="Select rows per page"
-            >
-              {rowsPerPageOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              size="sm"
+              className="w-24"
+            />
           </div>
           
           <div className="flex items-center gap-2">
@@ -379,23 +381,25 @@ const Table: React.FC<TableProps> = ({
               {(currentPage - 1) * rowsPerPage + 1}-
               {Math.min(currentPage * rowsPerPage, data.length)} of {data.length}
             </span>
-            <div className="join">
-              <button
-                className="join-item btn btn-sm"
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
                 aria-label="Previous page"
               >
                 «
-              </button>
-              <button
-                className="join-item btn btn-sm"
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
                 disabled={currentPage * rowsPerPage >= data.length}
                 onClick={() => setCurrentPage(currentPage + 1)}
                 aria-label="Next page"
               >
                 »
-              </button>
+              </Button>
             </div>
           </div>
         </div>

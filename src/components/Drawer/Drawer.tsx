@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '../Button/Button';
 
 interface DrawerProps {
   isOpen: boolean;
@@ -34,6 +35,15 @@ const Drawer: React.FC<DrawerProps> = ({
         className="drawer-content bg-base-100 h-full fixed top-0"
         style={{ width }}
       >
+        <Button
+          variant="ghost"
+          size="sm"
+          className="absolute right-2 top-2"
+          onClick={onClose}
+          aria-label="Close drawer"
+        >
+          ✕
+        </Button>
         {children}
       </div>
     </div>

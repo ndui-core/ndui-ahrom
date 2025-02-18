@@ -1,6 +1,7 @@
 import React from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { Button } from '../Button/Button';
 
 interface RichTextEditorProps {
   content: string;
@@ -42,25 +43,28 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         ${error ? 'border-error' : 'border-base-300'}
         ${className}
       `}>
-        <div className="btn-group mb-4">
-          <button
+        <div className="flex gap-2 mb-4">
+          <Button
+            size="sm"
+            variant={editor.isActive('bold') ? 'primary' : 'ghost'}
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`btn btn-sm ${editor.isActive('bold') ? 'btn-active' : ''}`}
           >
             Bold
-          </button>
-          <button
+          </Button>
+          <Button
+            size="sm"
+            variant={editor.isActive('italic') ? 'primary' : 'ghost'}
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`btn btn-sm ${editor.isActive('italic') ? 'btn-active' : ''}`}
           >
             Italic
-          </button>
-          <button
+          </Button>
+          <Button
+            size="sm"
+            variant={editor.isActive('bulletList') ? 'primary' : 'ghost'}
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`btn btn-sm ${editor.isActive('bulletList') ? 'btn-active' : ''}`}
           >
             Bullet List
-          </button>
+          </Button>
         </div>
         
         <EditorContent editor={editor} />
