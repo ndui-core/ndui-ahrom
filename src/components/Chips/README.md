@@ -17,7 +17,7 @@ A versatile chip component for displaying compact elements like tags, filters, o
 ## Usage
 
 ```tsx
-import { Chip } from 'your-library';
+import { Chip } from 'ndui-ahrom';
 
 // Basic usage
 <Chip label="Basic Chip" />

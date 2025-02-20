@@ -28,7 +28,7 @@ A versatile drawer component that slides in from the side of the screen, perfect
 ### Basic Usage
 
 ```tsx
-import { Drawer, Button } from 'your-library';
+import { Drawer, Button } from 'ndui-ahrom';
 import { useState } from 'react';
 
 function Example() {

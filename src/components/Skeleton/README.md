@@ -15,7 +15,7 @@ A skeleton loading component for creating placeholder animations while content i
 ## Usage
 
 ```tsx
-import { Skeleton } from 'your-library';
+import { Skeleton } from 'ndui-ahrom';
 
 // Text skeleton
 <Skeleton type="text" />

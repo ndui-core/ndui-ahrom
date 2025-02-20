@@ -235,7 +235,7 @@ const Table: React.FC<TableProps> = ({
                       }))}
                       
                       aria-label={`Filter ${column.label}`}
-                      size="xs"
+                      inputSize="xs"
                       className="mt-2 w-full"
                     />
                   )}

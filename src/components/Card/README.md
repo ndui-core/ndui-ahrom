@@ -14,7 +14,7 @@ A versatile card component for displaying content with optional title and footer
 ## Usage
 
 ```tsx
-import { Card, Button } from 'your-library';
+import { Card, Button } from 'ndui-ahrom';
 
 // Basic usage
 <Card>

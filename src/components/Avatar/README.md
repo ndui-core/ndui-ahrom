@@ -16,7 +16,7 @@ A versatile avatar component for displaying user profile images with fallback su
 ## Usage
 
 ```tsx
-import { Avatar } from 'your-library';
+import { Avatar } from 'ndui-ahrom';
 
 // Basic usage
 <Avatar

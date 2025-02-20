@@ -39,7 +39,7 @@ interface Step {
 ### Usage
 
 ```tsx
-import { Stepper } from 'your-library';
+import { Stepper } from 'ndui-ahrom';
 
 const steps = [
   {
@@ -118,7 +118,7 @@ interface Step {
 ### نحوه استفاده
 
 ```tsx
-import { Stepper } from 'your-library';
+import { Stepper } from 'ndui-ahrom';
 
 const steps = [
   {

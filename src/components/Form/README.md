@@ -16,7 +16,7 @@ A form component with built-in validation using React Hook Form and Zod schema v
 ### Usage
 
 ```tsx
-import { Form } from 'your-library';
+import { Form } from 'ndui-ahrom';
 import { z } from 'zod';
 
 const schema = z.object({
@@ -54,7 +54,7 @@ function Example() {
 ### نحوه استفاده
 
 ```tsx
-import { Form } from 'your-library';
+import { Form } from 'ndui-ahrom';
 import { z } from 'zod';
 
 const schema = z.object({

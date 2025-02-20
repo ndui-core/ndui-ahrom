@@ -25,7 +25,7 @@ interface TimelineItem {
 ## Usage
 
 ```tsx
-import { Timeline } from 'your-library';
+import { Timeline } from 'ndui-ahrom';
 
 const items = [
   {

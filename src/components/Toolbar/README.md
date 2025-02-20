@@ -13,7 +13,7 @@ A flexible toolbar component for creating application headers, navigation bars, 
 ## Usage
 
 ```tsx
-import { Toolbar, Button } from 'your-library';
+import { Toolbar, Button } from 'ndui-ahrom';
 
 // Basic usage
 <Toolbar>

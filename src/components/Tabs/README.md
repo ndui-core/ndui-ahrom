@@ -24,7 +24,7 @@ interface Tab {
 ## Usage
 
 ```tsx
-import { Tabs } from 'your-library';
+import { Tabs } from 'ndui-ahrom';
 
 const tabs = [
   {

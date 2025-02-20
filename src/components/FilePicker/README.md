@@ -17,7 +17,7 @@ A customizable file input component with support for multiple files, file type r
 ## Usage
 
 ```tsx
-import { FilePicker } from 'your-library';
+import { FilePicker } from 'ndui-ahrom';
 
 // Basic usage
 <FilePicker

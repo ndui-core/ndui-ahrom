@@ -8,7 +8,7 @@ interface Option {
 
 interface AutocompleteProps {
   options: Option[];
-  value: Option | null;
+  value: Option | null | Option[];
   onChange: (option: any) => void;
   isMulti?: boolean;
   isLoading?: boolean;
@@ -37,7 +37,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
       
       <Select
         options={options}
-        value={value}
+        value={isMulti ? (value as Option[] | null) : (value as Option | null)}
         onChange={onChange}
         isMulti={isMulti}
         isLoading={isLoading}

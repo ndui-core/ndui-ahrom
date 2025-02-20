@@ -16,7 +16,7 @@ A container component that adds smooth animations to its children using Framer M
 ### Usage
 
 ```tsx
-import { AnimatedContainer } from 'your-library';
+import { AnimatedContainer } from 'ndui-ahrom';
 
 function Example() {
   return (
@@ -46,7 +46,7 @@ function Example() {
 ### نحوه استفاده
 
 ```tsx
-import { AnimatedContainer } from 'your-library';
+import { AnimatedContainer } from 'ndui-ahrom';
 
 function Example() {
   return (

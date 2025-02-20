@@ -24,7 +24,7 @@ interface DropdownItem {
 ## Usage
 
 ```tsx
-import { Dropdown, Button } from 'your-library';
+import { Dropdown, Button } from 'ndui-ahrom';
 
 const items = [
   { 

@@ -16,7 +16,7 @@ A flexible input component with support for labels, error states, and various st
 ## Usage
 
 ```tsx
-import Input from 'your-library';
+import Input from 'ndui-ahrom';
 
 // Basic usage
 <Input

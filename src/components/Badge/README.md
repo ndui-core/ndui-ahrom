@@ -14,7 +14,7 @@ A flexible badge component for displaying status indicators, labels, or counts.
 ## Usage
 
 ```tsx
-import { Badge } from 'your-library';
+import { Badge } from 'ndui-ahrom';
 
 // Basic usage
 <Badge>Default</Badge>

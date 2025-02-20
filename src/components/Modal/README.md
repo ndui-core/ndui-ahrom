@@ -16,7 +16,7 @@ A modal dialog component with customizable content, title, and footer sections.
 ## Usage
 
 ```tsx
-import { Modal, Button } from 'your-library';
+import { Modal, Button } from 'ndui-ahrom';
 
 function Example() {
   const [isOpen, setIsOpen] = React.useState(false);

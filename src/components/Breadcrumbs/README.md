@@ -23,7 +23,7 @@ interface BreadcrumbItem {
 ## Usage
 
 ```tsx
-import { Breadcrumbs } from 'your-library';
+import { Breadcrumbs } from 'ndui-ahrom';
 
 const items = [
   {

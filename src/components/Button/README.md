@@ -28,7 +28,7 @@ A flexible button component with various styles, sizes, and states.
 ### Usage
 
 ```tsx
-import Button from 'your-library';
+import Button from 'ndui-ahrom';
 
 // Basic usage
 <Button>Click me</Button>
@@ -96,7 +96,7 @@ import Button from 'your-library';
 ### نحوه استفاده
 
 ```tsx
-import Button from 'your-library';
+import Button from 'ndui-ahrom';
 
 // استفاده ساده
 <Button>کلیک کنید</Button>

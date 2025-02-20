@@ -36,7 +36,7 @@ interface Column {
 ## Usage
 
 ```tsx
-import { Table } from 'your-library';
+import { Table } from 'ndui-ahrom';
 
 const columns = [
   {

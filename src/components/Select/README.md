@@ -25,7 +25,7 @@ interface Option {
 ## Usage
 
 ```tsx
-import Select from 'your-library';
+import Select from 'ndui-ahrom';
 
 const options = [
   { value: '1', label: 'Option 1' },

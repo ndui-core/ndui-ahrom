@@ -16,7 +16,7 @@ A Floating Action Button (FAB) component for primary actions in your application
 ## Usage
 
 ```tsx
-import { Fab } from 'your-library';
+import { Fab } from 'ndui-ahrom';
 
 // Basic usage
 <Fab

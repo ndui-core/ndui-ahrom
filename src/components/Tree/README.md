@@ -24,7 +24,7 @@ interface TreeNode {
 ## Usage
 
 ```tsx
-import { Tree } from 'your-library';
+import { Tree } from 'ndui-ahrom';
 
 const nodes = [
   {

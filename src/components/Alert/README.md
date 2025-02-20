@@ -25,7 +25,7 @@ A versatile alert component for displaying messages with different types and opt
 ### Usage
 
 ```tsx
-import { Alert } from 'your-library';
+import { Alert } from 'ndui-ahrom';
 
 // Basic usage
 <Alert message="This is an info alert" />
@@ -84,7 +84,7 @@ import { Alert } from 'your-library';
 ### نحوه استفاده
 
 ```tsx
-import { Alert } from 'your-library';
+import { Alert } from 'ndui-ahrom';
 
 // استفاده ساده
 <Alert message="این یک هشدار اطلاعاتی است" />

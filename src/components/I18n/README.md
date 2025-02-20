@@ -15,7 +15,7 @@ A provider component for internationalization using i18next.
 ### Usage
 
 ```tsx
-import { I18nProvider } from 'your-library';
+import { I18nProvider } from 'ndui-ahrom';
 
 const translations = {
   en: {
@@ -56,7 +56,7 @@ function App() {
 ### نحوه استفاده
 
 ```tsx
-import { I18nProvider } from 'your-library';
+import { I18nProvider } from 'ndui-ahrom';
 
 const translations = {
   en: {

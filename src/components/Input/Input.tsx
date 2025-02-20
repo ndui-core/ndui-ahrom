@@ -1,13 +1,14 @@
 import React from "react";
 
-interface InputProps {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   value?: string;
-  onChange: (option: any) => void;
+  onChange?: (option: any) => void;
   className?: string;
+  size?: number;
   variant?: "bordered" | "ghost" | "primary";
-  size?: "xs" | "sm" | "md" | "lg";
+  inputSize?: "xs" | "sm" | "md" | "lg";
 }
 
 const Input: React.FC<InputProps> = ({
@@ -16,11 +17,11 @@ const Input: React.FC<InputProps> = ({
   error,
   onChange,
   variant = "bordered",
-  size = "md",
+  inputSize = "md",
   className = "",
   ...props
 }) => {
-  const baseClass = `input input-${variant} ${size ? `input-${size}` : ""} ${
+  const baseClass = `input input-${variant} ${inputSize ? `input-${inputSize}` : ""} ${
     error ? "input-error" : ""
   } ${className}`;
 

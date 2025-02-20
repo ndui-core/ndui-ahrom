@@ -13,7 +13,7 @@ A simple tooltip component for displaying additional information on hover.
 ## Usage
 
 ```tsx
-import { Tooltip, Button } from 'your-library';
+import { Tooltip, Button } from 'ndui-ahrom';
 
 // Basic usage
 <Tooltip content="This is a tooltip">

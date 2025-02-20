@@ -16,7 +16,7 @@ A flexible grid system component with responsive support.
 ### Usage
 
 ```tsx
-import { Grid } from 'your-library';
+import { Grid } from 'ndui-ahrom';
 
 // Basic usage
 <Grid columns={3} gap={4}>
@@ -56,7 +56,7 @@ import { Grid } from 'your-library';
 ### نحوه استفاده
 
 ```tsx
-import { Grid } from 'your-library';
+import { Grid } from 'ndui-ahrom';
 
 // استفاده ساده
 <Grid columns={3} gap={4}>

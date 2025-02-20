@@ -26,7 +26,7 @@ interface MenuItem {
 ## Usage
 
 ```tsx
-import { Menu, Button } from 'your-library';
+import { Menu, Button } from 'ndui-ahrom';
 
 const items = [
   {
