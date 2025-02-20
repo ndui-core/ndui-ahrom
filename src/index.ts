@@ -5,6 +5,7 @@ export { default as AnimatedContainer } from "./components/Animation/AnimatedCon
 export { default as BottomBar } from "./components/BottomBar/BottomBar";
 export { default as Autocomplete } from "./components/Autocomplete/Autocomplete";
 export { default as Badge } from "./components/Badge/Badge";
+export { default as LayoutWrapper } from "./components/LayoutWrapper/LayoutWrapper";
 export { default as Breadcrumbs } from "./components/Breadcrumbs/Breadcrumbs";
 export { default as Button } from "./components/Button/Button";
 export { default as Card } from "./components/Card/Card";
