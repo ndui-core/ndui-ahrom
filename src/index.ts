@@ -2,6 +2,7 @@
 
 export { default as Alert } from "./components/Alert/Alert";
 export { default as AnimatedContainer } from "./components/Animation/AnimatedContainer";
+export { default as BottomBar } from "./components/BottomBar/BottomBar";
 export { default as Autocomplete } from "./components/Autocomplete/Autocomplete";
 export { default as Badge } from "./components/Badge/Badge";
 export { default as Breadcrumbs } from "./components/Breadcrumbs/Breadcrumbs";
