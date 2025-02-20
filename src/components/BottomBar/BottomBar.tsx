@@ -6,6 +6,7 @@ interface BottomBarItem {
   label: string;
   value: string;
   badge?: number | string;
+  href?: string;
 }
 
 interface BottomBarProps {
@@ -73,6 +74,74 @@ const BottomBar: React.FC<BottomBarProps> = ({
   isVisible = true,
   height = '56px',
 }) => {
+  const renderItem = (item: BottomBarItem) => {
+    const isActive = item.value === value;
+    const content = (
+      <>
+        {showActiveHighlight && isActive && animated && (
+          <motion.div
+            layoutId="activeBackground"
+            className={`absolute inset-x-4 top-1 h-1 bg-${activeColor} rounded-full`}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+          />
+        )}
+
+        <div className="relative">
+          {item.icon}
+          {item.badge && (
+            <div className={`
+              absolute -top-2 -right-2
+              min-w-[18px] h-[18px]
+              rounded-full
+              bg-error text-error-content
+              text-xs flex items-center justify-center
+              px-1
+            `}>
+              {item.badge}
+            </div>
+          )}
+        </div>
+
+        {showLabels && (
+          <span className={`
+            text-xs mt-1
+            ${isActive ? 'font-medium' : ''}
+          `}>
+            {item.label}
+          </span>
+        )}
+      </>
+    );
+
+    const className = `
+      flex flex-col items-center justify-center
+      flex-1 h-full relative
+      transition-colors duration-200
+      ${isActive ? `text-${activeColor}` : 'text-base-content'}
+    `;
+
+    if (item.href) {
+      return (
+        <a
+          href={item.href}
+          className={className}
+          onClick={() => onChange?.(item.value)}
+        >
+          {content}
+        </a>
+      );
+    }
+
+    return (
+      <button
+        onClick={() => onChange?.(item.value)}
+        className={className}
+      >
+        {content}
+      </button>
+    );
+  };
+
   return (
     <AnimatePresence>
       {isVisible && (
@@ -92,55 +161,11 @@ const BottomBar: React.FC<BottomBarProps> = ({
           style={{ height }}
         >
           <div className="flex items-center justify-around h-full">
-            {items.map((item) => {
-              const isActive = item.value === value;
-
-              return (
-                <button
-                  key={item.value}
-                  onClick={() => onChange?.(item.value)}
-                  className={`
-                    flex flex-col items-center justify-center
-                    flex-1 h-full relative
-                    transition-colors duration-200
-                    ${isActive ? `text-${activeColor}` : 'text-base-content'}
-                  `}
-                >
-                  {showActiveHighlight && isActive && animated && (
-                    <motion.div
-                      layoutId="activeBackground"
-                      className={`absolute inset-x-4 top-1 h-1 bg-${activeColor} rounded-full`}
-                      transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                    />
-                  )}
-
-                  <div className="relative">
-                    {item.icon}
-                    {item.badge && (
-                      <div className={`
-                        absolute -top-2 -right-2
-                        min-w-[18px] h-[18px]
-                        rounded-full
-                        bg-error text-error-content
-                        text-xs flex items-center justify-center
-                        px-1
-                      `}>
-                        {item.badge}
-                      </div>
-                    )}
-                  </div>
-
-                  {showLabels && (
-                    <span className={`
-                      text-xs mt-1
-                      ${isActive ? 'font-medium' : ''}
-                    `}>
-                      {item.label}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+            {items.map((item) => (
+              <div key={item.value} className="flex-1 h-full">
+                {renderItem(item)}
+              </div>
+            ))}
           </div>
         </motion.div>
       )}

@@ -19,12 +19,14 @@ interface LayoutWrapperProps {
     label: string;
     value: string;
     badge?: number | string;
+    href?: string;
   }[];
   showBottomBar?: boolean;
   bottomBarValue?: string;
   onBottomBarChange?: (value: string) => void;
   className?: string;
   breakpoint?: number;
+  rtl?: boolean;
 }
 
 const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
@@ -43,6 +45,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   onBottomBarChange,
   className = '',
   breakpoint = 1024,
+  rtl = false,
 }) => {
   const [isDesktop, setIsDesktop] = useState(true);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -60,26 +63,24 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   }, [breakpoint]);
 
   const mainContentStyle = isDesktop && isDrawerOpen ? {
-    marginLeft: miniDrawer ? miniDrawerWidth : drawerWidth
+    [rtl ? 'marginRight' : 'marginLeft']: miniDrawer ? miniDrawerWidth : drawerWidth
   } : {};
 
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen ${rtl ? 'rtl' : 'ltr'}`}>
       {/* Fixed Desktop Drawer */}
       {showDrawer && drawerContent && isDesktop && (
         <div 
-          className="fixed top-0 left-0 h-full transition-all duration-300"
+          className={`fixed top-0 ${rtl ? 'right-0' : 'left-0'} h-full transition-all duration-300`}
           style={{ 
             width: isDrawerOpen ? (miniDrawer ? miniDrawerWidth : drawerWidth) : '0px',
             contentVisibility: 'auto',
-            transform: isDrawerOpen ? 'translateX(0)' : 'translateX(-100%)'
+            transform: isDrawerOpen ? 'translateX(0)' : `translateX(${rtl ? '100%' : '-100%'})`
           }}
         >
-          <div className="h-full bg-base-100 border-r border-base-300">
+          <div className={`h-full bg-base-100 ${rtl ? 'border-l' : 'border-r'} border-base-300`}>
             {drawerContent}
           </div>
-
-          
         </div>
       )}
 
@@ -94,8 +95,8 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
         >
           <div 
             className={`
-              fixed top-0 left-0 h-full bg-base-100 transition-transform duration-300
-              ${isMobileDrawerOpen ? 'translate-x-0' : '-translate-x-full'}
+              fixed top-0 ${rtl ? 'right-0' : 'left-0'} h-full bg-base-100 transition-transform duration-300
+              ${isMobileDrawerOpen ? 'translate-x-0' : rtl ? 'translate-x-full' : '-translate-x-full'}
             `}
             style={{ width: drawerWidth }}
             onClick={e => e.stopPropagation()}
