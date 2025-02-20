@@ -1,16 +1,18 @@
 # Drawer Component
 
-A versatile drawer component that slides in from the side of the screen, perfect for navigation menus, filters, or additional content panels.
+A versatile drawer component inspired by Quasar Framework's drawer implementation.
 
 ## Features
 
-- Slides from left or right side
-- Customizable width
-- Optional overlay backdrop
+- Multiple positions (left, right, top, bottom)
+- Resizable
+- Mini mode
+- Responsive behavior
+- Fixed or absolute positioning
+- Overlay backdrop
+- Persistent mode
+- Elevation and border options
 - Smooth animations
-- Controlled visibility
-- TypeScript support
-- Responsive design
 
 ## Props
 
@@ -18,18 +20,27 @@ A versatile drawer component that slides in from the side of the screen, perfect
 |------|------|---------|-------------|
 | isOpen | boolean | - | Controls the visibility of the drawer |
 | onClose | () => void | - | Callback function when drawer is closed |
-| position | 'left' \| 'right' | 'left' | Position of the drawer |
-| width | string | '300px' | Width of the drawer |
 | children | ReactNode | - | Content to be displayed inside the drawer |
-| overlay | boolean | true | Whether to show the overlay backdrop |
+| side | 'left' \| 'right' \| 'top' \| 'bottom' | 'left' | Position of the drawer |
+| size | string | '300px' | Width/height of the drawer |
+| overlay | boolean | true | Show overlay behind drawer |
+| elevated | boolean | false | Add elevation shadow |
+| fixed | boolean | false | Use fixed positioning |
+| bordered | boolean | false | Add border |
+| mini | boolean | false | Enable mini mode |
+| miniWidth | string | '60px' | Width of mini drawer |
+| persistent | boolean | false | Prevent closing on outside click |
+| className | string | '' | Additional CSS classes |
+| behavior | 'default' \| 'desktop' \| 'mobile' | 'default' | Responsive behavior |
+| breakpoint | number | 1024 | Breakpoint for responsive behavior |
+| resizable | boolean | false | Enable resize handle |
+| minSize | string | '200px' | Minimum size when resizing |
+| maxSize | string | '600px' | Maximum size when resizing |
 
 ## Usage
 
-### Basic Usage
-
 ```tsx
 import { Drawer, Button } from 'ndui-ahrom';
-import { useState } from 'react';
 
 function Example() {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,99 +54,69 @@ function Example() {
       <Drawer
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
+        side="left"
+        size="300px"
       >
         <div className="p-4">
-          <h2 className="text-xl font-bold mb-4">Drawer Content</h2>
+          <h2 className="text-xl font-bold">Drawer Content</h2>
           <p>This is the drawer content.</p>
         </div>
       </Drawer>
     </>
   );
 }
-```
 
-### Custom Position and Width
-
-```tsx
+// Resizable drawer
 <Drawer
   isOpen={isOpen}
   onClose={() => setIsOpen(false)}
-  position="right"
-  width="400px"
+  resizable
+  minSize="200px"
+  maxSize="500px"
 >
   <div className="p-4">
-    <h2>Right Drawer</h2>
-    <p>This drawer slides in from the right side.</p>
+    <h2>Resizable Drawer</h2>
+    <p>Drag the edge to resize</p>
   </div>
 </Drawer>
-```
 
-### Without Overlay
-
-```tsx
+// Mini drawer
 <Drawer
   isOpen={isOpen}
   onClose={() => setIsOpen(false)}
-  overlay={false}
+  mini
+  miniWidth="60px"
 >
   <div className="p-4">
-    <h2>No Overlay</h2>
-    <p>This drawer doesn't show the overlay backdrop.</p>
+    <h2>Mini Drawer</h2>
   </div>
 </Drawer>
-```
 
-### Navigation Menu Example
-
-```tsx
+// Responsive drawer
 <Drawer
   isOpen={isOpen}
   onClose={() => setIsOpen(false)}
+  behavior="desktop"
+  breakpoint={768}
 >
   <div className="p-4">
-    <h2 className="text-xl font-bold mb-4">Menu</h2>
-    <nav className="flex flex-col gap-2">
-      <a href="/" className="hover:bg-base-200 p-2 rounded">Home</a>
-      <a href="/about" className="hover:bg-base-200 p-2 rounded">About</a>
-      <a href="/contact" className="hover:bg-base-200 p-2 rounded">Contact</a>
-    </nav>
+    <h2>Desktop Only Drawer</h2>
   </div>
 </Drawer>
 ```
-
-## Styling
-
-The drawer uses DaisyUI classes for styling and can be customized using Tailwind CSS classes. The main elements are:
-
-- `.drawer` - The main container
-- `.drawer-content` - The drawer panel
-- `.drawer-overlay` - The overlay backdrop
-
-You can customize the appearance by:
-- Adding custom classes to the drawer content
-- Modifying the width prop
-- Adjusting padding and margins of the content
-- Using DaisyUI theme colors
 
 ## Accessibility
 
-The drawer component:
-- Traps focus within the drawer when open
-- Closes on overlay click
-- Supports keyboard navigation
-- Uses ARIA attributes for screen readers
+- Proper focus management
+- ARIA attributes for overlay and drawer
+- Keyboard navigation support
+- Screen reader friendly
 
 ## Best Practices
 
-1. Always provide a clear way to close the drawer
-2. Use appropriate widths for different screen sizes
-3. Consider the content hierarchy inside the drawer
-4. Use the overlay prop based on your use case
-5. Implement proper loading states if content is dynamic
-
-## Notes
-
-- The drawer uses fixed positioning, ensure your layout accounts for this
-- Content outside the drawer remains interactive when overlay is disabled
-- Consider using the `position` prop based on your app's UX requirements
-- The drawer automatically handles responsive behavior
+1. Use appropriate `side` based on your app's layout
+2. Consider using `persistent` for main navigation drawers
+3. Use `behavior` for responsive layouts
+4. Set appropriate `minSize` and `maxSize` when using `resizable`
+5. Use `mini` mode for space-efficient navigation
+6. Consider `fixed` positioning for full-height layouts
