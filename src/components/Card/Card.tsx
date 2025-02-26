@@ -5,13 +5,14 @@ interface CardProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
+  elevated?: boolean;
 }
 
-const Card: React.FC<CardProps> = ({ title, children, footer, className = "" }) => {
+const Card: React.FC<CardProps> = ({ title, children, footer, className = ""  , elevated = false}) => {
   return (
-    <div className={`card bg-base-100 shadow-xl ${className}`}>
+    <div  className={`card bg-white  ${className} ${elevated ? 'shadow-xl' : 'border-2'}`}>
       {title && (
-        <div className="card-title p-6 pb-0">
+        <div className="card-title p-4 pb-0">
           {title}
         </div>
       )}

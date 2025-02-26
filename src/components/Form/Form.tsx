@@ -17,7 +17,8 @@ function Form<T extends z.ZodType>({
   className = '' 
 }: FormProps<T>) {
   const methods = useForm({
-    resolver: zodResolver(schema)
+    resolver: zodResolver(schema),
+    defaultValues: {} as z.infer<T>,
   });
 
   return (

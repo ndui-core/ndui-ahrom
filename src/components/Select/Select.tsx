@@ -9,6 +9,7 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
   label?: string;
   options: Option[];
   error?: string;
+  placeholder?: string;
   size?: "xs" | "sm" | "md" | "lg";
 }
 
@@ -18,6 +19,7 @@ const Select: React.FC<SelectProps> = ({
   error,
   size = "md",
   className = "",
+  placeholder = "",
   ...props
 }) => {
   return (
@@ -28,6 +30,7 @@ const Select: React.FC<SelectProps> = ({
         </label>
       )}
       <select
+      aria-placeholder={placeholder}
         className={`select select-bordered ${size ? `select-${size}` : ""} ${
           error ? "select-error" : ""
         } ${className}`}

@@ -4,19 +4,23 @@ import StarterKit from '@tiptap/starter-kit';
 import Button from '../Button/Button';
 
 interface RichTextEditorProps {
+  name: string;
   content: string;
   onChange: (content: string) => void;
   label?: string;
   error?: string;
   className?: string;
+  placeholder?: string;
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
+  name,
   content,
   onChange,
   label,
   error,
-  className = ''
+  className = '',
+  placeholder = ''
 }) => {
   const editor = useEditor({
     extensions: [StarterKit],
@@ -67,7 +71,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           </Button>
         </div>
         
-        <EditorContent editor={editor} />
+        <EditorContent placeholder={placeholder} name={name} editor={editor} />
       </div>
       
       {error && (

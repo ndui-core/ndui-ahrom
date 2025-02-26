@@ -47,7 +47,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   breakpoint = 1024,
   rtl = false,
 }) => {
-  const [isDesktop, setIsDesktop] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 

@@ -1,14 +1,14 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Button from '../Button/Button';
-import Input from '../Input/Input';
-import Select from '../Select/Select';
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Button from "../Button/Button";
+import Input from "../Input/Input";
+import Select from "../Select/Select";
 
 export interface Column {
   name: string;
   field: string;
   label: string;
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
   sortable?: boolean;
   filterable?: boolean;
   format?: (value: any) => React.ReactNode;
@@ -21,7 +21,7 @@ export interface TableProps {
   data: any[];
   title?: string;
   loading?: boolean;
-  selection?: 'single' | 'multiple' | 'none';
+  selection?: "single" | "multiple" | "none";
   onSelectionChange?: (selected: any[]) => void;
   pagination?: boolean;
   rowsPerPageOptions?: number[];
@@ -38,16 +38,16 @@ const Table: React.FC<TableProps> = ({
   data,
   title,
   loading = false,
-  selection = 'none',
+  selection = "none",
   onSelectionChange,
   pagination = true,
   rowsPerPageOptions = [5, 10, 20, 50],
   defaultRowsPerPage = 10,
   onRowClick,
-  noDataMessage = 'No data available',
-  loadingMessage = 'Loading...',
+  noDataMessage = "No data available",
+  loadingMessage = "Loading...",
   expandable = false,
-  renderExpandedRow
+  renderExpandedRow,
 }) => {
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDesc, setSortDesc] = useState(false);
@@ -68,39 +68,39 @@ const Table: React.FC<TableProps> = ({
     resizingColumn.current = columnName;
     startX.current = e.pageX;
     startWidth.current = columnWidths[columnName] || 0;
-    
-    document.addEventListener('mousemove', handleResizeMove);
-    document.addEventListener('mouseup', handleResizeEnd);
+
+    document.addEventListener("mousemove", handleResizeMove);
+    document.addEventListener("mouseup", handleResizeEnd);
   };
 
   const handleResizeMove = (e: MouseEvent) => {
     if (!resizingColumn.current) return;
-    
+
     const diff = e.pageX - startX.current;
     const newWidth = Math.max(50, startWidth.current + diff);
-    
-    setColumnWidths(prev => ({
+
+    setColumnWidths((prev) => ({
       ...prev,
-      [resizingColumn.current!]: newWidth
+      [resizingColumn.current!]: newWidth,
     }));
   };
 
   const handleResizeEnd = () => {
     resizingColumn.current = null;
-    document.removeEventListener('mousemove', handleResizeMove);
-    document.removeEventListener('mouseup', handleResizeEnd);
+    document.removeEventListener("mousemove", handleResizeMove);
+    document.removeEventListener("mouseup", handleResizeEnd);
   };
 
   useEffect(() => {
     return () => {
-      document.removeEventListener('mousemove', handleResizeMove);
-      document.removeEventListener('mouseup', handleResizeEnd);
+      document.removeEventListener("mousemove", handleResizeMove);
+      document.removeEventListener("mouseup", handleResizeEnd);
     };
   }, []);
 
   // Handle filtering
   const filteredData = useMemo(() => {
-    return data.filter(row => {
+    return data.filter((row) => {
       return Object.entries(filters).every(([field, value]) => {
         const cellValue = row[field]?.toString().toLowerCase();
         return !value || cellValue?.includes(value.toLowerCase());
@@ -115,7 +115,7 @@ const Table: React.FC<TableProps> = ({
     return [...filteredData].sort((a, b) => {
       const aValue = a[sortBy];
       const bValue = b[sortBy];
-      
+
       if (aValue === bValue) return 0;
       const comparison = aValue > bValue ? 1 : -1;
       return sortDesc ? -comparison : comparison;
@@ -125,7 +125,7 @@ const Table: React.FC<TableProps> = ({
   // Handle pagination
   const paginatedData = useMemo(() => {
     if (!pagination) return sortedData;
-    
+
     const start = (currentPage - 1) * rowsPerPage;
     return sortedData.slice(start, start + rowsPerPage);
   }, [sortedData, currentPage, rowsPerPage, pagination]);
@@ -139,8 +139,8 @@ const Table: React.FC<TableProps> = ({
 
   const handleSelectRow = (row: any) => {
     let newSelected: any[];
-    
-    if (selection === 'single') {
+
+    if (selection === "single") {
       newSelected = [row];
     } else {
       const selectedIndex = selected.indexOf(row);
@@ -150,7 +150,7 @@ const Table: React.FC<TableProps> = ({
         newSelected = selected.filter((_, index) => index !== selectedIndex);
       }
     }
-    
+
     setSelected(newSelected);
     onSelectionChange?.(newSelected);
   };
@@ -159,30 +159,39 @@ const Table: React.FC<TableProps> = ({
 
   // Handle row expansion
   const toggleRowExpansion = (rowId: string) => {
-    setExpandedRows(prev => 
-      prev.includes(rowId) 
-        ? prev.filter(id => id !== rowId)
+    setExpandedRows((prev) =>
+      prev.includes(rowId)
+        ? prev.filter((id) => id !== rowId)
         : [...prev, rowId]
     );
   };
 
   return (
-    <div className="overflow-x-auto" ref={tableRef} role="table" aria-label={title}>
+    <div
+      className="overflow-x-auto"
+      ref={tableRef}
+      role="table"
+      aria-label={title}
+    >
       {title && (
-        <div className="p-4 font-bold text-lg" role="heading" aria-level={1}>{title}</div>
+        <div className="p-4 font-bold text-lg" role="heading" aria-level={1}>
+          {title}
+        </div>
       )}
-      
+
       <div className="overflow-x-auto">
         <table className="table w-full">
           <thead>
             <tr>
-              {selection !== 'none' && (
+              {selection !== "none" && (
                 <th className="w-16">
-                  {selection === 'multiple' && (
+                  {selection === "multiple" && (
                     <input
                       type="checkbox"
                       className="checkbox"
-                      checked={data.length > 0 && selected.length === data.length}
+                      checked={
+                        data.length > 0 && selected.length === data.length
+                      }
                       onChange={handleSelectAll}
                       aria-label="Select all rows"
                     />
@@ -194,13 +203,13 @@ const Table: React.FC<TableProps> = ({
                 <th
                   key={column.name}
                   className={`
-                    ${column.sortable ? 'cursor-pointer' : ''} 
-                    ${column.align ? `text-${column.align}` : ''}
+                    ${column.sortable ? "cursor-pointer" : ""} 
+                    ${column.align ? `text-${column.align}` : ""}
                     relative
                   `}
-                  style={{ 
+                  style={{
                     width: columnWidths[column.name] || column.width,
-                    minWidth: '100px'
+                    minWidth: "100px",
                   }}
                   onClick={() => {
                     if (column.sortable) {
@@ -214,26 +223,29 @@ const Table: React.FC<TableProps> = ({
                   }}
                   role="columnheader"
                   aria-sort={
-                    sortBy === column.field 
-                      ? sortDesc ? 'descending' : 'ascending'
-                      : 'none'
+                    sortBy === column.field
+                      ? sortDesc
+                        ? "descending"
+                        : "ascending"
+                      : "none"
                   }
                 >
                   <div className="flex items-center gap-2">
                     {column.label}
                     {column.sortable && sortBy === column.field && (
-                      <span aria-hidden="true">{sortDesc ? '↓' : '↑'}</span>
+                      <span aria-hidden="true">{sortDesc ? "↓" : "↑"}</span>
                     )}
                   </div>
                   {column.filterable && (
                     <Input
-                    
-                      value={filters[column.field] || ''}
-                      onChange={(e: { target: { value: any; }; }) => setFilters(prev => ({
-                        ...prev,
-                        [column.field]: e.target.value
-                      }))}
-                      
+                      name={filters[column.field] || ""}
+                      value={filters[column.field] || ""}
+                      onChange={(e: { target: { value: any } }) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          [column.field]: e.target.value,
+                        }))
+                      }
                       aria-label={`Filter ${column.label}`}
                       inputSize="xs"
                       className="mt-2 w-full"
@@ -249,12 +261,16 @@ const Table: React.FC<TableProps> = ({
               ))}
             </tr>
           </thead>
-          
+
           <tbody>
             {loading ? (
               <tr>
                 <td
-                  colSpan={columns.length + (selection !== 'none' ? 1 : 0) + (expandable ? 1 : 0)}
+                  colSpan={
+                    columns.length +
+                    (selection !== "none" ? 1 : 0) +
+                    (expandable ? 1 : 0)
+                  }
                   className="text-center p-4"
                   role="status"
                 >
@@ -264,7 +280,11 @@ const Table: React.FC<TableProps> = ({
             ) : paginatedData.length === 0 ? (
               <tr>
                 <td
-                  colSpan={columns.length + (selection !== 'none' ? 1 : 0) + (expandable ? 1 : 0)}
+                  colSpan={
+                    columns.length +
+                    (selection !== "none" ? 1 : 0) +
+                    (expandable ? 1 : 0)
+                  }
                   className="text-center p-4"
                 >
                   {noDataMessage}
@@ -275,23 +295,25 @@ const Table: React.FC<TableProps> = ({
                 <React.Fragment key={rowIndex}>
                   <tr
                     className={`
-                      ${onRowClick ? 'cursor-pointer hover:bg-base-200' : ''}
-                      ${isSelected(row) ? 'bg-base-200' : ''}
+                      ${onRowClick ? "cursor-pointer hover:bg-base-200" : ""}
+                      ${isSelected(row) ? "bg-base-200" : ""}
                     `}
                     onClick={() => {
                       onRowClick?.(row, rowIndex);
-                      if (selection !== 'none') {
+                      if (selection !== "none") {
                         handleSelectRow(row);
                       }
                     }}
                     role="row"
                     aria-selected={isSelected(row)}
                   >
-                    {selection !== 'none' && (
+                    {selection !== "none" && (
                       <td role="cell">
                         <input
-                          type={selection === 'multiple' ? 'checkbox' : 'radio'}
-                          className={selection === 'multiple' ? 'checkbox' : 'radio'}
+                          type={selection === "multiple" ? "checkbox" : "radio"}
+                          className={
+                            selection === "multiple" ? "checkbox" : "radio"
+                          }
                           checked={isSelected(row)}
                           onChange={() => handleSelectRow(row)}
                           onClick={(e) => e.stopPropagation()}
@@ -311,17 +333,17 @@ const Table: React.FC<TableProps> = ({
                           aria-expanded={expandedRows.includes(row.id)}
                           aria-label={`Expand row ${rowIndex + 1}`}
                         >
-                          {expandedRows.includes(row.id) ? '▼' : '▶'}
+                          {expandedRows.includes(row.id) ? "▼" : "▶"}
                         </Button>
                       </td>
                     )}
                     {columns.map((column) => (
                       <td
                         key={column.name}
-                        className={column.align ? `text-${column.align}` : ''}
-                        style={{ 
+                        className={column.align ? `text-${column.align}` : ""}
+                        style={{
                           width: columnWidths[column.name] || column.width,
-                          ...column.style 
+                          ...column.style,
                         }}
                         role="cell"
                       >
@@ -333,14 +355,16 @@ const Table: React.FC<TableProps> = ({
                   </tr>
                   {expandable && expandedRows.includes(row.id) && (
                     <tr>
-                      <td 
-                        colSpan={columns.length + (selection !== 'none' ? 1 : 0) + 1}
+                      <td
+                        colSpan={
+                          columns.length + (selection !== "none" ? 1 : 0) + 1
+                        }
                         className="p-4 bg-base-100"
                       >
                         <AnimatePresence>
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
+                            animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
                             transition={{ duration: 0.2 }}
                           >
@@ -357,14 +381,14 @@ const Table: React.FC<TableProps> = ({
         </table>
       </div>
 
-      {pagination && data.length > 0 && (
+      {pagination && data.length > rowsPerPage && (
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
           <div className="flex items-center gap-2">
             <span>Rows per page:</span>
             <Select
-              options={rowsPerPageOptions.map(option => ({
+              options={rowsPerPageOptions.map((option) => ({
                 value: option.toString(),
-                label: option.toString()
+                label: option.toString(),
               }))}
               value={rowsPerPage.toString()}
               onChange={(e) => {
@@ -375,11 +399,12 @@ const Table: React.FC<TableProps> = ({
               className="w-24"
             />
           </div>
-          
+
           <div className="flex items-center gap-2">
             <span>
               {(currentPage - 1) * rowsPerPage + 1}-
-              {Math.min(currentPage * rowsPerPage, data.length)} of {data.length}
+              {Math.min(currentPage * rowsPerPage, data.length)} of{" "}
+              {data.length}
             </span>
             <div className="flex gap-2">
               <Button
