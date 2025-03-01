@@ -3,15 +3,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import Button from "../Button/Button";
 import Input from "../Input/Input";
 import Select from "../Select/Select";
+import Card from "../Card/Card";
 
 export interface Column {
   name: string;
-  field: string;
+  field?: string;
   label: string;
   align?: "left" | "center" | "right";
   sortable?: boolean;
   filterable?: boolean;
   format?: (value: any) => React.ReactNode;
+  render?: (row: any) => React.ReactNode;
   style?: React.CSSProperties;
   width?: number | string;
 }
@@ -31,6 +33,7 @@ export interface TableProps {
   loadingMessage?: string;
   expandable?: boolean;
   renderExpandedRow?: (row: any) => React.ReactNode;
+  defaultViewMode?: "table" | "card";
 }
 
 const Table: React.FC<TableProps> = ({
@@ -48,6 +51,7 @@ const Table: React.FC<TableProps> = ({
   loadingMessage = "Loading...",
   expandable = false,
   renderExpandedRow,
+  defaultViewMode = "table",
 }) => {
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDesc, setSortDesc] = useState(false);
@@ -57,6 +61,7 @@ const Table: React.FC<TableProps> = ({
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [viewMode, setViewMode] = useState<"table" | "card">(defaultViewMode);
   const tableRef = useRef<HTMLDivElement>(null);
   const resizingColumn = useRef<string | null>(null);
   const startX = useRef<number>(0);
@@ -102,6 +107,7 @@ const Table: React.FC<TableProps> = ({
   const filteredData = useMemo(() => {
     return data.filter((row) => {
       return Object.entries(filters).every(([field, value]) => {
+        if (!field) return true;
         const cellValue = row[field]?.toString().toLowerCase();
         return !value || cellValue?.includes(value.toLowerCase());
       });
@@ -166,6 +172,301 @@ const Table: React.FC<TableProps> = ({
     );
   };
 
+  // Get cell content based on column configuration
+  const getCellContent = (row: any, column: Column) => {
+    if (column.render) {
+      return column.render(row);
+    }
+    
+    if (column.field) {
+      const value = column.field.includes('.')
+        ? column.field.split('.').reduce((obj, key) => obj && obj[key], row)
+        : row[column.field];
+        
+      return column.format ? column.format(value) : value;
+    }
+    
+    return null;
+  };
+
+  // Render table view
+  const renderTableView = () => (
+    <div className="overflow-x-auto">
+      <table className="table w-full">
+        <thead>
+          <tr>
+            {selection !== "none" && (
+              <th className="w-16">
+                {selection === "multiple" && (
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    checked={
+                      data.length > 0 && selected.length === data.length
+                    }
+                    onChange={handleSelectAll}
+                    aria-label="Select all rows"
+                  />
+                )}
+              </th>
+            )}
+            {expandable && <th className="w-12"></th>}
+            {columns.map((column) => (
+              <th
+                key={column.name}
+                className={`
+                  ${column.sortable && column.field ? "cursor-pointer" : ""} 
+                  ${column.align ? `text-${column.align}` : ""}
+                  relative
+                `}
+                style={{
+                  width: columnWidths[column.name] || column.width,
+                  minWidth: "100px",
+                }}
+                onClick={() => {
+                  if (column.sortable && column.field) {
+                    if (sortBy === column.field) {
+                      setSortDesc(!sortDesc);
+                    } else {
+                      setSortBy(column.field);
+                      setSortDesc(false);
+                    }
+                  }
+                }}
+                role="columnheader"
+                aria-sort={
+                  sortBy === column.field
+                    ? sortDesc
+                      ? "descending"
+                      : "ascending"
+                    : "none"
+                }
+              >
+                <div className="flex items-center gap-2">
+                  {column.label}
+                  {column.sortable && column.field && sortBy === column.field && (
+                    <span aria-hidden="true">{sortDesc ? "↓" : "↑"}</span>
+                  )}
+                </div>
+                {column.filterable && column.field && (
+                  <Input
+                    name={`filter-${column.field}`}
+                    value={filters[column.field] || ""}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        [column.field!]: e.target.value,
+                      }))
+                    }
+                    aria-label={`Filter ${column.label}`}
+                    inputSize="xs"
+                    className="mt-2 w-full"
+                  />
+                )}
+                <div
+                  className="absolute right-0 top-0 h-full w-1 cursor-col-resize"
+                  onMouseDown={(e) => handleResizeStart(e, column.name)}
+                  role="separator"
+                  aria-orientation="vertical"
+                />
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+          {loading ? (
+            <tr>
+              <td
+                colSpan={
+                  columns.length +
+                  (selection !== "none" ? 1 : 0) +
+                  (expandable ? 1 : 0)
+                }
+                className="text-center p-4"
+                role="status"
+              >
+                {loadingMessage}
+              </td>
+            </tr>
+          ) : paginatedData.length === 0 ? (
+            <tr>
+              <td
+                colSpan={
+                  columns.length +
+                  (selection !== "none" ? 1 : 0) +
+                  (expandable ? 1 : 0)
+                }
+                className="text-center p-4"
+              >
+                {noDataMessage}
+              </td>
+            </tr>
+          ) : (
+            paginatedData.map((row, rowIndex) => (
+              <React.Fragment key={rowIndex}>
+                <tr
+                  className={`
+                    ${onRowClick ? "cursor-pointer hover:bg-base-200" : ""}
+                    ${isSelected(row) ? "bg-base-200" : ""}
+                  `}
+                  onClick={() => {
+                    onRowClick?.(row, rowIndex);
+                    if (selection !== "none") {
+                      handleSelectRow(row);
+                    }
+                  }}
+                  role="row"
+                  aria-selected={isSelected(row)}
+                >
+                  {selection !== "none" && (
+                    <td role="cell">
+                      <input
+                        type={selection === "multiple" ? "checkbox" : "radio"}
+                        className={
+                          selection === "multiple" ? "checkbox" : "radio"
+                        }
+                        checked={isSelected(row)}
+                        onChange={() => handleSelectRow(row)}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Select row ${rowIndex + 1}`}
+                      />
+                    </td>
+                  )}
+                  {expandable && (
+                    <td role="cell">
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleRowExpansion(row.id);
+                        }}
+                        aria-expanded={expandedRows.includes(row.id)}
+                        aria-label={`Expand row ${rowIndex + 1}`}
+                      >
+                        {expandedRows.includes(row.id) ? "▼" : "▶"}
+                      </Button>
+                    </td>
+                  )}
+                  {columns.map((column) => (
+                    <td
+                      key={column.name}
+                      className={column.align ? `text-${column.align}` : ""}
+                      style={{
+                        width: columnWidths[column.name] || column.width,
+                        ...column.style,
+                      }}
+                      role="cell"
+                    >
+                      {getCellContent(row, column)}
+                    </td>
+                  ))}
+                </tr>
+                {expandable && expandedRows.includes(row.id) && (
+                  <tr>
+                    <td
+                      colSpan={
+                        columns.length + (selection !== "none" ? 1 : 0) + 1
+                      }
+                      className="p-4 bg-base-100"
+                    >
+                      <AnimatePresence>
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          {renderExpandedRow?.(row)}
+                        </motion.div>
+                      </AnimatePresence>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  // Render card view
+  const renderCardView = () => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {loading ? (
+        <div className="col-span-full text-center p-4" role="status">
+          {loadingMessage}
+        </div>
+      ) : paginatedData.length === 0 ? (
+        <div className="col-span-full text-center p-4">
+          {noDataMessage}
+        </div>
+      ) : (
+        paginatedData.map((row, rowIndex) => (
+          <Card
+            key={rowIndex}
+            className={`
+              ${onRowClick ? "cursor-pointer" : ""}
+              ${isSelected(row) ? "border-primary" : ""}
+            `}
+          >
+            <div className="flex justify-between items-start mb-4">
+              {selection !== "none" && (
+                <input
+                  type={selection === "multiple" ? "checkbox" : "radio"}
+                  className={selection === "multiple" ? "checkbox" : "radio"}
+                  checked={isSelected(row)}
+                  onChange={() => handleSelectRow(row)}
+                  onClick={(e) => e.stopPropagation()}
+                  aria-label={`Select row ${rowIndex + 1}`}
+                />
+              )}
+              {expandable && (
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleRowExpansion(row.id);
+                  }}
+                  aria-expanded={expandedRows.includes(row.id)}
+                  aria-label={`Expand row ${rowIndex + 1}`}
+                >
+                  {expandedRows.includes(row.id) ? "▼" : "▶"}
+                </Button>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              {columns.map((column) => (
+                <div key={column.name} className="flex flex-col">
+                  <span className="text-sm font-medium">{column.label}</span>
+                  <div>{getCellContent(row, column)}</div>
+                </div>
+              ))}
+            </div>
+
+            {expandable && expandedRows.includes(row.id) && (
+              <AnimatePresence>
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-4 pt-4 border-t"
+                >
+                  {renderExpandedRow?.(row)}
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </Card>
+        ))
+      )}
+    </div>
+  );
+
   return (
     <div
       className="overflow-x-auto"
@@ -173,213 +474,34 @@ const Table: React.FC<TableProps> = ({
       role="table"
       aria-label={title}
     >
-      {title && (
-        <div className="p-4 font-bold text-lg" role="heading" aria-level={1}>
-          {title}
+      <div className="flex justify-between items-center p-4">
+        {title && (
+          <div className="font-bold text-lg" role="heading" aria-level={1}>
+            {title}
+          </div>
+        )}
+
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant={viewMode === "table" ? "primary" : "ghost"}
+            onClick={() => setViewMode("table")}
+            aria-label="Table view"
+          >
+            Table
+          </Button>
+          <Button
+            size="sm"
+            variant={viewMode === "card" ? "primary" : "ghost"}
+            onClick={() => setViewMode("card")}
+            aria-label="Card view"
+          >
+            Cards
+          </Button>
         </div>
-      )}
-
-      <div className="overflow-x-auto">
-        <table className="table w-full">
-          <thead>
-            <tr>
-              {selection !== "none" && (
-                <th className="w-16">
-                  {selection === "multiple" && (
-                    <input
-                      type="checkbox"
-                      className="checkbox"
-                      checked={
-                        data.length > 0 && selected.length === data.length
-                      }
-                      onChange={handleSelectAll}
-                      aria-label="Select all rows"
-                    />
-                  )}
-                </th>
-              )}
-              {expandable && <th className="w-12"></th>}
-              {columns.map((column) => (
-                <th
-                  key={column.name}
-                  className={`
-                    ${column.sortable ? "cursor-pointer" : ""} 
-                    ${column.align ? `text-${column.align}` : ""}
-                    relative
-                  `}
-                  style={{
-                    width: columnWidths[column.name] || column.width,
-                    minWidth: "100px",
-                  }}
-                  onClick={() => {
-                    if (column.sortable) {
-                      if (sortBy === column.field) {
-                        setSortDesc(!sortDesc);
-                      } else {
-                        setSortBy(column.field);
-                        setSortDesc(false);
-                      }
-                    }
-                  }}
-                  role="columnheader"
-                  aria-sort={
-                    sortBy === column.field
-                      ? sortDesc
-                        ? "descending"
-                        : "ascending"
-                      : "none"
-                  }
-                >
-                  <div className="flex items-center gap-2">
-                    {column.label}
-                    {column.sortable && sortBy === column.field && (
-                      <span aria-hidden="true">{sortDesc ? "↓" : "↑"}</span>
-                    )}
-                  </div>
-                  {column.filterable && (
-                    <Input
-                      name={filters[column.field] || ""}
-                      value={filters[column.field] || ""}
-                      onChange={(e: { target: { value: any } }) =>
-                        setFilters((prev) => ({
-                          ...prev,
-                          [column.field]: e.target.value,
-                        }))
-                      }
-                      aria-label={`Filter ${column.label}`}
-                      inputSize="xs"
-                      className="mt-2 w-full"
-                    />
-                  )}
-                  <div
-                    className="absolute right-0 top-0 h-full w-1 cursor-col-resize"
-                    onMouseDown={(e) => handleResizeStart(e, column.name)}
-                    role="separator"
-                    aria-orientation="vertical"
-                  />
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
-              <tr>
-                <td
-                  colSpan={
-                    columns.length +
-                    (selection !== "none" ? 1 : 0) +
-                    (expandable ? 1 : 0)
-                  }
-                  className="text-center p-4"
-                  role="status"
-                >
-                  {loadingMessage}
-                </td>
-              </tr>
-            ) : paginatedData.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={
-                    columns.length +
-                    (selection !== "none" ? 1 : 0) +
-                    (expandable ? 1 : 0)
-                  }
-                  className="text-center p-4"
-                >
-                  {noDataMessage}
-                </td>
-              </tr>
-            ) : (
-              paginatedData.map((row, rowIndex) => (
-                <React.Fragment key={rowIndex}>
-                  <tr
-                    className={`
-                      ${onRowClick ? "cursor-pointer hover:bg-base-200" : ""}
-                      ${isSelected(row) ? "bg-base-200" : ""}
-                    `}
-                    onClick={() => {
-                      onRowClick?.(row, rowIndex);
-                      if (selection !== "none") {
-                        handleSelectRow(row);
-                      }
-                    }}
-                    role="row"
-                    aria-selected={isSelected(row)}
-                  >
-                    {selection !== "none" && (
-                      <td role="cell">
-                        <input
-                          type={selection === "multiple" ? "checkbox" : "radio"}
-                          className={
-                            selection === "multiple" ? "checkbox" : "radio"
-                          }
-                          checked={isSelected(row)}
-                          onChange={() => handleSelectRow(row)}
-                          onClick={(e) => e.stopPropagation()}
-                          aria-label={`Select row ${rowIndex + 1}`}
-                        />
-                      </td>
-                    )}
-                    {expandable && (
-                      <td role="cell">
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleRowExpansion(row.id);
-                          }}
-                          aria-expanded={expandedRows.includes(row.id)}
-                          aria-label={`Expand row ${rowIndex + 1}`}
-                        >
-                          {expandedRows.includes(row.id) ? "▼" : "▶"}
-                        </Button>
-                      </td>
-                    )}
-                    {columns.map((column) => (
-                      <td
-                        key={column.name}
-                        className={column.align ? `text-${column.align}` : ""}
-                        style={{
-                          width: columnWidths[column.name] || column.width,
-                          ...column.style,
-                        }}
-                        role="cell"
-                      >
-                        {column.format
-                          ? column.format(row[column.field])
-                          : row[column.field]}
-                      </td>
-                    ))}
-                  </tr>
-                  {expandable && expandedRows.includes(row.id) && (
-                    <tr>
-                      <td
-                        colSpan={
-                          columns.length + (selection !== "none" ? 1 : 0) + 1
-                        }
-                        className="p-4 bg-base-100"
-                      >
-                        <AnimatePresence>
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            {renderExpandedRow?.(row)}
-                          </motion.div>
-                        </AnimatePresence>
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              ))
-            )}
-          </tbody>
-        </table>
       </div>
+
+      {viewMode === "table" ? renderTableView() : renderCardView()}
 
       {pagination && data.length > rowsPerPage && (
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
