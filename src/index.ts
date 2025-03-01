@@ -1,5 +1,6 @@
 "use client"
 
+export { default as TableActions } from "./components/TableActions/TableActions";
 export { default as Alert } from "./components/Alert/Alert";
 export { default as AnimatedContainer } from "./components/Animation/AnimatedContainer";
 export { default as BottomBar } from "./components/BottomBar/BottomBar";
