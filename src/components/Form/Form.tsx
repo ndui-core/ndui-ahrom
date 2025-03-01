@@ -8,17 +8,19 @@ interface FormProps<T extends z.ZodType> {
   onSubmit: (data: z.infer<T>) => void;
   children: React.ReactNode;
   className?: string;
+  defaultValues?: z.infer<T>;
 }
 
 function Form<T extends z.ZodType>({ 
   schema, 
   onSubmit, 
   children, 
+  defaultValues, 
   className = '' 
 }: FormProps<T>) {
   const methods = useForm({
     resolver: zodResolver(schema),
-    defaultValues: {} as z.infer<T>,
+    defaultValues: defaultValues as z.infer<T>,
   });
 
   return (
