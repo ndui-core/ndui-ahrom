@@ -32,8 +32,15 @@ export interface TableProps {
   noDataMessage?: string;
   loadingMessage?: string;
   expandable?: boolean;
+  tableCardView?: boolean;
   renderExpandedRow?: (row: any) => React.ReactNode;
   defaultViewMode?: "table" | "card";
+  gridValue?: {
+    sm?: number;
+    md?: number;
+    lg?: number;
+    xl?: number;
+  };
 }
 
 const Table: React.FC<TableProps> = ({
@@ -50,8 +57,10 @@ const Table: React.FC<TableProps> = ({
   noDataMessage = "No data available",
   loadingMessage = "Loading...",
   expandable = false,
+  tableCardView = true,
   renderExpandedRow,
   defaultViewMode = "table",
+  gridValue = { sm: 1, md: 2, lg: 3, xl: 3 },
 }) => {
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDesc, setSortDesc] = useState(false);
@@ -177,21 +186,21 @@ const Table: React.FC<TableProps> = ({
     if (column.render) {
       return column.render(row);
     }
-    
+
     if (column.field) {
-      const value = column.field.includes('.')
-        ? column.field.split('.').reduce((obj, key) => obj && obj[key], row)
+      const value = column.field.includes(".")
+        ? column.field.split(".").reduce((obj, key) => obj && obj[key], row)
         : row[column.field];
-        
+
       return column.format ? column.format(value) : value;
     }
-    
+
     return null;
   };
 
   // Render table view
   const renderTableView = () => (
-    <div className="overflow-x-auto">
+    <div className={`overflow-x-auto ${tableCardView ? 'bg-white border-2 p-2 rounded-lg' : ''}`}>
       <table className="table w-full">
         <thead>
           <tr>
@@ -201,9 +210,7 @@ const Table: React.FC<TableProps> = ({
                   <input
                     type="checkbox"
                     className="checkbox"
-                    checked={
-                      data.length > 0 && selected.length === data.length
-                    }
+                    checked={data.length > 0 && selected.length === data.length}
                     onChange={handleSelectAll}
                     aria-label="Select all rows"
                   />
@@ -242,11 +249,13 @@ const Table: React.FC<TableProps> = ({
                     : "none"
                 }
               >
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ">
                   {column.label}
-                  {column.sortable && column.field && sortBy === column.field && (
-                    <span aria-hidden="true">{sortDesc ? "↓" : "↑"}</span>
-                  )}
+                  {column.sortable &&
+                    column.field &&
+                    sortBy === column.field && (
+                      <span aria-hidden="true">{sortDesc ? "↓" : "↑"}</span>
+                    )}
                 </div>
                 {column.filterable && column.field && (
                   <Input
@@ -394,15 +403,13 @@ const Table: React.FC<TableProps> = ({
 
   // Render card view
   const renderCardView = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+    <div className={`grid grid-cols-${gridValue.sm} md:grid-cols-${gridValue.md} lg:grid-cols-${gridValue.lg}  xl:grid-cols-${gridValue.xl} gap-2`}>
       {loading ? (
         <div className="col-span-full text-center p-4" role="status">
           {loadingMessage}
         </div>
       ) : paginatedData.length === 0 ? (
-        <div className="col-span-full text-center p-4">
-          {noDataMessage}
-        </div>
+        <div className="col-span-full text-center p-4">{noDataMessage}</div>
       ) : (
         paginatedData.map((row, rowIndex) => (
           <Card
@@ -469,15 +476,15 @@ const Table: React.FC<TableProps> = ({
 
   // Table view icon SVG
   const TableIcon = () => (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="16" 
-      height="16" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
       strokeLinejoin="round"
     >
       <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -490,15 +497,15 @@ const Table: React.FC<TableProps> = ({
 
   // Card view icon SVG
   const CardIcon = () => (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="16" 
-      height="16" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
       strokeLinejoin="round"
     >
       <rect x="3" y="3" width="7" height="7"></rect>
