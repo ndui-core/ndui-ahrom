@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { usePathname } from "next/navigation";
 import Toolbar from '../Toolbar/Toolbar';
 import BottomBar from '../BottomBar/BottomBar';
+import Link from "next/link";
 
 interface MenuItem {
   id: string;
@@ -152,9 +153,9 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
     return (
       <li key={item.id}>
         {item.href ? (
-          <a href={item.href} className="block">
+          <Link href={item.href} className="block">
             {itemContent}
-          </a>
+          </Link>
         ) : (
             itemContentWithChildren
         )}
