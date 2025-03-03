@@ -40,11 +40,11 @@ const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {icon && iconPosition === "left" && (
-        <span className="mr-2" aria-hidden="true">{icon}</span>
+        <span className="mx-1" aria-hidden="true">{icon}</span>
       )}
       {children}
       {icon && iconPosition === "right" && (
-        <span className="ml-2" aria-hidden="true">{icon}</span>
+        <span className="mx-1" aria-hidden="true">{icon}</span>
       )}
     </button>
   );

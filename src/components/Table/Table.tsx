@@ -5,6 +5,46 @@ import Input from "../Input/Input";
 import Select from "../Select/Select";
 import Card from "../Card/Card";
 
+const TableIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="3" y1="9" x2="21" y2="9"></line>
+    <line x1="3" y1="15" x2="21" y2="15"></line>
+    <line x1="9" y1="3" x2="9" y2="21"></line>
+    <line x1="15" y1="3" x2="15" y2="21"></line>
+  </svg>
+);
+
+// Card view icon SVG
+const CardIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="3" y="3" width="7" height="7"></rect>
+    <rect x="14" y="3" width="7" height="7"></rect>
+    <rect x="14" y="14" width="7" height="7"></rect>
+    <rect x="3" y="14" width="7" height="7"></rect>
+  </svg>
+);
+
 export interface Column {
   name: string;
   field?: string;
@@ -41,6 +81,11 @@ export interface TableProps {
     lg?: number;
     xl?: number;
   };
+  iconViewMode?: {
+    table?: React.ReactNode;
+    card?: React.ReactNode;
+    list?: React.ReactNode;
+  };
 }
 
 const Table: React.FC<TableProps> = ({
@@ -61,6 +106,7 @@ const Table: React.FC<TableProps> = ({
   renderExpandedRow,
   defaultViewMode = "table",
   gridValue = { sm: 1, md: 2, lg: 3, xl: 3 },
+  iconViewMode = { card: CardIcon() , table: TableIcon() , list: TableIcon() },
 }) => {
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDesc, setSortDesc] = useState(false);
@@ -475,46 +521,7 @@ const Table: React.FC<TableProps> = ({
   );
 
   // Table view icon SVG
-  const TableIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-      <line x1="3" y1="9" x2="21" y2="9"></line>
-      <line x1="3" y1="15" x2="21" y2="15"></line>
-      <line x1="9" y1="3" x2="9" y2="21"></line>
-      <line x1="15" y1="3" x2="15" y2="21"></line>
-    </svg>
-  );
-
-  // Card view icon SVG
-  const CardIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="3" width="7" height="7"></rect>
-      <rect x="14" y="3" width="7" height="7"></rect>
-      <rect x="14" y="14" width="7" height="7"></rect>
-      <rect x="3" y="14" width="7" height="7"></rect>
-    </svg>
-  );
-
+ 
   return (
     <div
       className="overflow-x-auto"
@@ -531,18 +538,16 @@ const Table: React.FC<TableProps> = ({
 
         <div className="flex items-center gap-2">
           <Button
-            size="sm"
             variant={viewMode === "table" ? "primary" : "ghost"}
             onClick={() => setViewMode("table")}
             aria-label="Table view"
-            icon={<TableIcon />}
+            icon={iconViewMode.table}
           />
           <Button
-            size="sm"
             variant={viewMode === "card" ? "primary" : "ghost"}
             onClick={() => setViewMode("card")}
             aria-label="Card view"
-            icon={<CardIcon />}
+            icon={iconViewMode.card}
           />
         </div>
       </div>
