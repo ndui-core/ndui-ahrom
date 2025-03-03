@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from "next/link";
 
 interface BreadcrumbItem {
   label: React.ReactNode;
@@ -23,14 +24,14 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({
         {items.map((item, index) => (
           <li key={index}>
             {item.href ? (
-              <a
+              <Link
                 href={item.href}
                 className="flex items-center gap-2"
               >
                 {item.icon && <span>{item.icon}</span>}
                 
                 {item.label}
-              </a>
+              </Link>
             ) : (
               <span className="flex items-center gap-2">
                 {item.icon && <span>{item.icon}</span>}

@@ -7,9 +7,20 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   variant?: "bordered" | "ghost" | "primary";
   inputSize?: "xs" | "sm" | "md" | "lg";
+  prepend?: React.ReactNode;
+  append?: React.ReactNode;
 }
 
-const Input: React.FC<InputProps> = ({ name, label, variant = "bordered", inputSize = "md", className = "", ...props }) => {
+const Input: React.FC<InputProps> = ({ 
+  name, 
+  label, 
+  variant = "bordered", 
+  inputSize = "md", 
+  className = "", 
+  prepend,
+  append,
+  ...props 
+}) => {
   const methods = useFormContext();
   if (!methods) {
     console.error("❌ useFormContext() is null! Make sure this Input component is inside a FormProvider.");
@@ -28,7 +39,32 @@ const Input: React.FC<InputProps> = ({ name, label, variant = "bordered", inputS
           <span className="label-text">{label}</span>
         </label>
       )}
-      <input {...register(name)} className={baseClass} {...props} />
+      
+      <div className="flex">
+        {prepend && (
+          <div className="flex items-center justify-center px-3 bg-base-200 border border-r-0 border-base-300 rounded-l-lg">
+            {prepend}
+          </div>
+        )}
+        
+        <input 
+          {...register(name)} 
+          className={`
+            ${baseClass}
+            ${prepend ? 'rounded-l-none' : ''}
+            ${append ? 'rounded-r-none' : ''}
+            ${prepend || append ? 'flex-1' : ''}
+          `} 
+          {...props} 
+        />
+        
+        {append && (
+          <div className="flex items-center justify-center px-3 bg-base-200 border border-l-0 border-base-300 rounded-r-lg">
+            {append}
+          </div>
+        )}
+      </div>
+      
       {error && (
         <label className="label">
           <span className="label-text-alt text-error">{error}</span>

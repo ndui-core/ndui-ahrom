@@ -45,6 +45,28 @@ const CardIcon = () => (
   </svg>
 );
 
+// List view icon SVG
+const ListIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="8" y1="6" x2="21" y2="6"></line>
+    <line x1="8" y1="12" x2="21" y2="12"></line>
+    <line x1="8" y1="18" x2="21" y2="18"></line>
+    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+  </svg>
+);
+
 export interface Column {
   name: string;
   field?: string;
@@ -65,16 +87,22 @@ export interface TableProps {
   loading?: boolean;
   selection?: "single" | "multiple" | "none";
   onSelectionChange?: (selected: any[]) => void;
-  pagination?: boolean;
+  pagination?: {
+    total: number;
+    pages: number;
+    page: number;
+    limit: number;
+  };
+  onPageChange?: (page: number) => void;
+  onLimitChange?: (limit: number) => void;
   rowsPerPageOptions?: number[];
-  defaultRowsPerPage?: number;
   onRowClick?: (row: any, index: number) => void;
   noDataMessage?: string;
   loadingMessage?: string;
   expandable?: boolean;
   tableCardView?: boolean;
   renderExpandedRow?: (row: any) => React.ReactNode;
-  defaultViewMode?: "table" | "card";
+  defaultViewMode?: "table" | "card" | "list";
   gridValue?: {
     sm?: number;
     md?: number;
@@ -86,6 +114,9 @@ export interface TableProps {
     card?: React.ReactNode;
     list?: React.ReactNode;
   };
+  listItemHeight?: string;
+  listItemClassName?: string;
+  listItemRender?: (row: any, columns: Column[]) => React.ReactNode;
 }
 
 const Table: React.FC<TableProps> = ({
@@ -95,9 +126,10 @@ const Table: React.FC<TableProps> = ({
   loading = false,
   selection = "none",
   onSelectionChange,
-  pagination = true,
+  pagination,
+  onPageChange,
+  onLimitChange,
   rowsPerPageOptions = [5, 10, 20, 50],
-  defaultRowsPerPage = 10,
   onRowClick,
   noDataMessage = "No data available",
   loadingMessage = "Loading...",
@@ -106,17 +138,22 @@ const Table: React.FC<TableProps> = ({
   renderExpandedRow,
   defaultViewMode = "table",
   gridValue = { sm: 1, md: 2, lg: 3, xl: 3 },
-  iconViewMode = { card: CardIcon() , table: TableIcon() , list: TableIcon() },
+  iconViewMode = { 
+    card: <CardIcon />, 
+    table: <TableIcon />, 
+    list: <ListIcon /> 
+  },
+  listItemHeight = "auto",
+  listItemClassName = "",
+  listItemRender,
 }) => {
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDesc, setSortDesc] = useState(false);
   const [selected, setSelected] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(defaultRowsPerPage);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const [viewMode, setViewMode] = useState<"table" | "card">(defaultViewMode);
+  const [viewMode, setViewMode] = useState<"table" | "card" | "list">(defaultViewMode);
   const tableRef = useRef<HTMLDivElement>(null);
   const resizingColumn = useRef<string | null>(null);
   const startX = useRef<number>(0);
@@ -183,14 +220,6 @@ const Table: React.FC<TableProps> = ({
     });
   }, [filteredData, sortBy, sortDesc]);
 
-  // Handle pagination
-  const paginatedData = useMemo(() => {
-    if (!pagination) return sortedData;
-
-    const start = (currentPage - 1) * rowsPerPage;
-    return sortedData.slice(start, start + rowsPerPage);
-  }, [sortedData, currentPage, rowsPerPage, pagination]);
-
   // Handle selection
   const handleSelectAll = () => {
     const newSelected = selected.length === data.length ? [] : data;
@@ -242,6 +271,19 @@ const Table: React.FC<TableProps> = ({
     }
 
     return null;
+  };
+
+  // Handle pagination
+  const handlePageChange = (page: number) => {
+    if (onPageChange) {
+      onPageChange(page);
+    }
+  };
+
+  const handleLimitChange = (limit: number) => {
+    if (onLimitChange) {
+      onLimitChange(limit);
+    }
   };
 
   // Render table view
@@ -344,7 +386,7 @@ const Table: React.FC<TableProps> = ({
                 {loadingMessage}
               </td>
             </tr>
-          ) : paginatedData.length === 0 ? (
+          ) : data.length === 0 ? (
             <tr>
               <td
                 colSpan={
@@ -358,7 +400,7 @@ const Table: React.FC<TableProps> = ({
               </td>
             </tr>
           ) : (
-            paginatedData.map((row, rowIndex) => (
+            data.map((row, rowIndex) => (
               <React.Fragment key={rowIndex}>
                 <tr
                   className={`
@@ -454,10 +496,10 @@ const Table: React.FC<TableProps> = ({
         <div className="col-span-full text-center p-4" role="status">
           {loadingMessage}
         </div>
-      ) : paginatedData.length === 0 ? (
+      ) : data.length === 0 ? (
         <div className="col-span-full text-center p-4">{noDataMessage}</div>
       ) : (
-        paginatedData.map((row, rowIndex) => (
+        data.map((row, rowIndex) => (
           <Card
             key={rowIndex}
             className={`
@@ -520,8 +562,115 @@ const Table: React.FC<TableProps> = ({
     </div>
   );
 
-  // Table view icon SVG
- 
+  // Render list view
+  const renderListView = () => (
+    <div className="flex flex-col gap-2">
+      {loading ? (
+        <div className="text-center p-4" role="status">
+          {loadingMessage}
+        </div>
+      ) : data.length === 0 ? (
+        <div className="text-center p-4">{noDataMessage}</div>
+      ) : (
+        data.map((row, rowIndex) => {
+          // Use custom list item renderer if provided
+          if (listItemRender) {
+            return (
+              <div 
+                key={rowIndex}
+                className={`
+                  bg-white p-4 rounded-lg border border-base-300
+                  ${onRowClick ? "cursor-pointer hover:bg-base-100" : ""}
+                  ${isSelected(row) ? "border-primary" : ""}
+                  ${listItemClassName}
+                `}
+                style={{ minHeight: listItemHeight }}
+                onClick={() => {
+                  onRowClick?.(row, rowIndex);
+                  if (selection !== "none") {
+                    handleSelectRow(row);
+                  }
+                }}
+              >
+                {listItemRender(row, columns)}
+              </div>
+            );
+          }
+
+          // Default list item rendering
+          return (
+            <div 
+              key={rowIndex}
+              className={`
+                bg-white p-4 rounded-lg border border-base-300
+                ${onRowClick ? "cursor-pointer hover:bg-base-100" : ""}
+                ${isSelected(row) ? "border-primary" : ""}
+                ${listItemClassName}
+              `}
+              style={{ minHeight: listItemHeight }}
+              onClick={() => {
+                onRowClick?.(row, rowIndex);
+                if (selection !== "none") {
+                  handleSelectRow(row);
+                }
+              }}
+            >
+              <div className="flex justify-between items-start mb-2">
+                {selection !== "none" && (
+                  <input
+                    type={selection === "multiple" ? "checkbox" : "radio"}
+                    className={selection === "multiple" ? "checkbox" : "radio"}
+                    checked={isSelected(row)}
+                    onChange={() => handleSelectRow(row)}
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label={`Select row ${rowIndex + 1}`}
+                  />
+                )}
+                {expandable && (
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleRowExpansion(row.id);
+                    }}
+                    aria-expanded={expandedRows.includes(row.id)}
+                    aria-label={`Expand row ${rowIndex + 1}`}
+                  >
+                    {expandedRows.includes(row.id) ? "▼" : "▶"}
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {columns.map((column) => (
+                  <div key={column.name} className="flex justify-between">
+                    <span className="font-medium">{column.label}:</span>
+                    <div>{getCellContent(row, column)}</div>
+                  </div>
+                ))}
+              </div>
+
+              {expandable && expandedRows.includes(row.id) && (
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-4 pt-4 border-t"
+                  >
+                    {renderExpandedRow?.(row)}
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+
   return (
     <div
       className="overflow-x-auto"
@@ -549,12 +698,22 @@ const Table: React.FC<TableProps> = ({
             aria-label="Card view"
             icon={iconViewMode.card}
           />
+          <Button
+            variant={viewMode === "list" ? "primary" : "ghost"}
+            onClick={() => setViewMode("list")}
+            aria-label="List view"
+            icon={iconViewMode.list}
+          />
         </div>
       </div>
 
-      {viewMode === "table" ? renderTableView() : renderCardView()}
+      {viewMode === "table" 
+        ? renderTableView() 
+        : viewMode === "card" 
+          ? renderCardView() 
+          : renderListView()}
 
-      {pagination && data.length > rowsPerPage && (
+      {pagination && (
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
           <div className="flex items-center gap-2">
             <span>Rows per page:</span>
@@ -563,10 +722,9 @@ const Table: React.FC<TableProps> = ({
                 value: option.toString(),
                 label: option.toString(),
               }))}
-              value={rowsPerPage.toString()}
+              value={pagination.limit.toString()}
               onChange={(e) => {
-                setRowsPerPage(Number(e.target.value));
-                setCurrentPage(1);
+                handleLimitChange(Number(e.target.value));
               }}
               size="sm"
               className="w-24"
@@ -575,16 +733,16 @@ const Table: React.FC<TableProps> = ({
 
           <div className="flex items-center gap-2">
             <span>
-              {(currentPage - 1) * rowsPerPage + 1}-
-              {Math.min(currentPage * rowsPerPage, data.length)} of{" "}
-              {data.length}
+              {pagination.total > 0 
+                ? `${(pagination.page - 1) * pagination.limit + 1}-${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total}`
+                : '0-0 of 0'}
             </span>
             <div className="flex gap-2">
               <Button
                 size="sm"
                 variant="ghost"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={pagination.page === 1}
+                onClick={() => handlePageChange(pagination.page - 1)}
                 aria-label="Previous page"
               >
                 «
@@ -592,8 +750,8 @@ const Table: React.FC<TableProps> = ({
               <Button
                 size="sm"
                 variant="ghost"
-                disabled={currentPage * rowsPerPage >= data.length}
-                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={pagination.page >= pagination.pages}
+                onClick={() => handlePageChange(pagination.page + 1)}
                 aria-label="Next page"
               >
                 »

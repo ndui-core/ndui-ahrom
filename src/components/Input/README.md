@@ -11,6 +11,8 @@ A flexible input component with support for labels, error states, and various st
 | variant | 'bordered' \| 'ghost' \| 'primary' | 'bordered' | Visual style of the input |
 | size | 'xs' \| 'sm' \| 'md' \| 'lg' | 'md' | Size of the input |
 | className | string | '' | Additional CSS classes |
+| prepend | ReactNode | - | Content to prepend before the input |
+| append | ReactNode | - | Content to append after the input |
 | ...props | InputHTMLAttributes<HTMLInputElement> | - | All native input attributes |
 
 ## Usage
@@ -36,6 +38,21 @@ import Input from 'ndui-ahrom';
   label="Search"
   variant="ghost"
   size="lg"
+  placeholder="Search..."
+/>
+
+// With prepend and append
+<Input
+  label="Price"
+  prepend="$"
+  append=".00"
+  placeholder="0"
+/>
+
+// With component prepend/append
+<Input
+  label="Search"
+  append={<button className="btn btn-primary">Search</button>}
   placeholder="Search..."
 />
 ```
