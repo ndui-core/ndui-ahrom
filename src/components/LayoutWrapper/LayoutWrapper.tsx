@@ -31,9 +31,9 @@ interface LayoutWrapperProps {
   bottomBarItems?: {
     icon: React.ReactNode;
     label: string;
-    value: string;
+    value?: string;
     badge?: number | string;
-    href?: string;
+    href: string;
   }[];
   showBottomBar?: boolean;
   bottomBarValue?: string;
@@ -56,7 +56,6 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   drawerWidth = '256px',
   miniDrawerWidth = '60px',
   bgColor = 'bg-white',
-
   activeClass = 'bg-base-200',
   hoverClass = 'bg-base-100',
   toolbarContent,
@@ -64,8 +63,6 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   elevatedToolbar = true,
   bottomBarItems,
   showBottomBar = true,
-  bottomBarValue,
-  onBottomBarChange,
   className = '',
   breakpoint = 1024,
   rtl = false,
@@ -273,8 +270,6 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
         {showBottomBar && bottomBarItems && !isDesktop && (
           <BottomBar
             items={bottomBarItems}
-            value={bottomBarValue}
-            onChange={onBottomBarChange}
           />
         )}
       </div>

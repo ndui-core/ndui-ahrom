@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../Button/Button";
 import Input from "../Input/Input";
@@ -196,35 +196,36 @@ const Table: React.FC<TableProps> = ({
   }, []);
 
   // Handle filtering
-  const filteredData = useMemo(() => {
-    return data.filter((row) => {
-      return Object.entries(filters).every(([field, value]) => {
-        if (!field) return true;
-        const cellValue = row[field]?.toString().toLowerCase();
-        return !value || cellValue?.includes(value.toLowerCase());
-      });
-    });
-  }, [data, filters]);
+  // const filteredData = useMemo(() => {
+  //   return data.filter((row) => {
+  //     return Object.entries(filters).every(([field, value]) => {
+  //       if (!field) return true;
+  //       const cellValue = row[field]?.toString().toLowerCase();
+  //       return !value || cellValue?.includes(value.toLowerCase());
+  //     });
+  //   });
+  // }, [data, filters]);
 
   // Handle sorting
-  const sortedData = useMemo(() => {
-    if (!sortBy) return filteredData;
+  // const sortedData = useMemo(() => {
+  //   if (!sortBy) return filteredData;
 
-    return [...filteredData].sort((a, b) => {
-      const aValue = a[sortBy];
-      const bValue = b[sortBy];
+  //   return [...filteredData].sort((a, b) => {
+  //     const aValue = a[sortBy];
+  //     const bValue = b[sortBy];
 
-      if (aValue === bValue) return 0;
-      const comparison = aValue > bValue ? 1 : -1;
-      return sortDesc ? -comparison : comparison;
-    });
-  }, [filteredData, sortBy, sortDesc]);
+  //     if (aValue === bValue) return 0;
+  //     const comparison = aValue > bValue ? 1 : -1;
+  //     return sortDesc ? -comparison : comparison;
+  //   });
+  // }, [filteredData, sortBy, sortDesc]);
 
   // Handle selection
   const handleSelectAll = () => {
-    const newSelected = selected.length === data.length ? [] : data;
-    setSelected(newSelected);
-    onSelectionChange?.(newSelected);
+    console.log('TODO')
+    // const newSelected = selected.length === data.length ? [] : data;
+    // setSelected(newSelected);
+    // onSelectionChange?.(newSelected);
   };
 
   const handleSelectRow = (row: any) => {
@@ -715,9 +716,7 @@ const Table: React.FC<TableProps> = ({
 
       {pagination && (
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
-          <div className="flex items-center gap-2">
-            <span>Rows per page:</span>
-            <Select
+          <Select
               options={rowsPerPageOptions.map((option) => ({
                 value: option.toString(),
                 label: option.toString(),
@@ -729,13 +728,11 @@ const Table: React.FC<TableProps> = ({
               size="sm"
               className="w-24"
             />
-          </div>
-
           <div className="flex items-center gap-2">
             <span>
               {pagination.total > 0 
                 ? `${(pagination.page - 1) * pagination.limit + 1}-${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total}`
-                : '0-0 of 0'}
+                : '0-0 از 0'}
             </span>
             <div className="flex gap-2">
               <Button

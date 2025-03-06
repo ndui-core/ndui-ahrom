@@ -1,12 +1,14 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface BottomBarItem {
   icon: React.ReactNode;
   label: string;
-  value: string;
+  value?: string;
   badge?: number | string;
-  href?: string;
+  href: string;
 }
 
 interface BottomBarProps {
@@ -62,8 +64,6 @@ interface BottomBarProps {
 
 const BottomBar: React.FC<BottomBarProps> = ({
   items,
-  value,
-  onChange,
   showLabels = true,
   elevated = true,
   bordered = false,
@@ -75,10 +75,11 @@ const BottomBar: React.FC<BottomBarProps> = ({
   height = '56px',
 }) => {
   const renderItem = (item: BottomBarItem) => {
-    const isActive = item.value === value;
+      const pathName = usePathname();
+    
     const content = (
       <>
-        {showActiveHighlight && isActive && animated && (
+        {showActiveHighlight && pathName === item.href && animated && (
           <motion.div
             layoutId="activeBackground"
             className={`absolute inset-x-4 top-1 h-1 bg-${activeColor} rounded-full`}
@@ -105,7 +106,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
         {showLabels && (
           <span className={`
             text-xs mt-1
-            ${isActive ? 'font-medium' : ''}
+            ${pathName === item.href ? 'font-medium' : ''}
           `}>
             {item.label}
           </span>
@@ -117,29 +118,17 @@ const BottomBar: React.FC<BottomBarProps> = ({
       flex flex-col items-center justify-center
       flex-1 h-full relative
       transition-colors duration-200
-      ${isActive ? `text-${activeColor}` : 'text-base-content'}
+      ${pathName === item.href ? `text-${activeColor}` : 'text-base-content'}
     `;
 
-    if (item.href) {
       return (
-        <a
+        <Link
           href={item.href}
           className={className}
-          onClick={() => onChange?.(item.value)}
         >
           {content}
-        </a>
+        </Link>
       );
-    }
-
-    return (
-      <button
-        onClick={() => onChange?.(item.value)}
-        className={className}
-      >
-        {content}
-      </button>
-    );
   };
 
   return (
