@@ -85,6 +85,7 @@ export interface TableProps {
   data: any[];
   title?: string;
   loading?: boolean;
+  showIconViews?: boolean;
   selection?: "single" | "multiple" | "none";
   onSelectionChange?: (selected: any[]) => void;
   pagination?: {
@@ -124,6 +125,7 @@ const Table: React.FC<TableProps> = ({
   data,
   title,
   loading = false,
+  showIconViews = true,
   selection = "none",
   onSelectionChange,
   pagination,
@@ -565,7 +567,7 @@ const Table: React.FC<TableProps> = ({
 
   // Render list view
   const renderListView = () => (
-    <div className="flex flex-col gap-2">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
       {loading ? (
         <div className="text-center p-4" role="status">
           {loadingMessage}
@@ -646,7 +648,7 @@ const Table: React.FC<TableProps> = ({
               <div className="flex flex-col gap-2">
                 {columns.map((column) => (
                   <div key={column.name} className="flex justify-between">
-                    <span className="font-medium">{column.label}:</span>
+                    <span className="font-bold text-primary">{column.label}:</span>
                     <div>{getCellContent(row, column)}</div>
                   </div>
                 ))}
@@ -686,7 +688,7 @@ const Table: React.FC<TableProps> = ({
           </div>
         )}
 
-        <div className="flex items-center gap-2">
+        {showIconViews && <div className="flex items-center gap-2">
           <Button
             variant={viewMode === "table" ? "primary" : "ghost"}
             onClick={() => setViewMode("table")}
@@ -694,29 +696,23 @@ const Table: React.FC<TableProps> = ({
             icon={iconViewMode.table}
           />
           <Button
-            variant={viewMode === "card" ? "primary" : "ghost"}
-            onClick={() => setViewMode("card")}
-            aria-label="Card view"
-            icon={iconViewMode.card}
-          />
-          <Button
             variant={viewMode === "list" ? "primary" : "ghost"}
             onClick={() => setViewMode("list")}
             aria-label="List view"
             icon={iconViewMode.list}
           />
-        </div>
+        </div>}
       </div>
 
       {viewMode === "table" 
         ? renderTableView() 
         : viewMode === "card" 
-          ? renderCardView() 
+          ? renderListView() 
           : renderListView()}
 
       {pagination && (
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
-          <Select
+          {/* <Select
               options={rowsPerPageOptions.map((option) => ({
                 value: option.toString(),
                 label: option.toString(),
@@ -727,8 +723,8 @@ const Table: React.FC<TableProps> = ({
               }}
               size="sm"
               className="w-24"
-            />
-          <div className="flex items-center gap-2">
+            /> */}
+          <div className="flex items-end gap-2">
             <span>
               {pagination.total > 0 
                 ? `${(pagination.page - 1) * pagination.limit + 1}-${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total}`

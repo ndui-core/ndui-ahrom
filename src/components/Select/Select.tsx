@@ -1,4 +1,5 @@
 import React from "react";
+import { useFormContext } from "react-hook-form";
 
 interface Option {
   value: string;
@@ -8,20 +9,30 @@ interface Option {
 interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
   label?: string;
   options: Option[];
-  error?: string;
+  name: string;
   placeholder?: string;
   size?: "xs" | "sm" | "md" | "lg";
 }
 
 const Select: React.FC<SelectProps> = ({
+  name,
   label,
   options,
-  error,
   size = "md",
   className = "",
   placeholder = "",
   ...props
 }) => {
+  const methods = useFormContext();
+  if (!methods) {
+    console.error("❌ useFormContext() is null! Make sure this Input component is inside a FormProvider.");
+    return null;
+  }
+
+
+  const { register, formState: { errors } } = methods;
+  const error = errors[name]?.message as string | undefined;
+
   return (
     <div className="form-control w-full">
       {label && (
@@ -35,6 +46,7 @@ const Select: React.FC<SelectProps> = ({
           error ? "select-error" : ""
         } ${className}`}
         {...props}
+        {...register(name)} 
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

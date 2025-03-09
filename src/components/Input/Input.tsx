@@ -40,26 +40,28 @@ const Input: React.FC<InputProps> = ({
         </label>
       )}
       
-      <div className="flex">
+      <div className="flex flex-row-reverse ">
         {prepend && (
-          <div className="flex items-center justify-center px-3 bg-base-200 border border-r-0 border-base-300 rounded-l-lg">
+          <div className="px-1 flex flex-col justify-center">
             {prepend}
           </div>
         )}
         
         <input 
-          {...register(name)} 
+          {...register(name, {
+            valueAsNumber: props.type === "number",
+          })} 
           className={`
             ${baseClass}
-            ${prepend ? 'rounded-l-none' : ''}
-            ${append ? 'rounded-r-none' : ''}
-            ${prepend || append ? 'flex-1' : ''}
+            ${prepend ? '' : ''}
+            ${append ? '' : ''}
+            ${prepend || append ? 'flex-1' : 'w-full'}
           `} 
           {...props} 
         />
         
         {append && (
-          <div className="flex items-center justify-center px-3 bg-base-200 border border-l-0 border-base-300 rounded-r-lg">
+          <div className="px-1 flex flex-col justify-center">
             {append}
           </div>
         )}
