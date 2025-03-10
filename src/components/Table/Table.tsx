@@ -582,7 +582,7 @@ const Table: React.FC<TableProps> = ({
               <div 
                 key={rowIndex}
                 className={`
-                  bg-white p-4 rounded-lg border border-base-300
+                  
                   ${onRowClick ? "cursor-pointer hover:bg-base-100" : ""}
                   ${isSelected(row) ? "border-primary" : ""}
                   ${listItemClassName}

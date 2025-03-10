@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Toolbar from '../Toolbar/Toolbar';
-import BottomBar from '../BottomBar/BottomBar';
+import Toolbar from "../Toolbar/Toolbar";
+import BottomBar from "../BottomBar/BottomBar";
 import Link from "next/link";
 
 interface MenuItem {
@@ -14,6 +14,7 @@ interface MenuItem {
   onClick?: () => void;
   children?: MenuItem[];
   active?: boolean;
+  divider?: boolean;
 }
 
 interface LayoutWrapperProps {
@@ -53,17 +54,17 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   drawerMenuItems = [],
   showDrawer = true,
   miniDrawer = false,
-  drawerWidth = '256px',
-  miniDrawerWidth = '60px',
-  bgColor = 'bg-white',
-  activeClass = 'bg-base-200',
-  hoverClass = 'bg-base-100',
+  drawerWidth = "256px",
+  miniDrawerWidth = "60px",
+  bgColor = "bg-white",
+  activeClass = "bg-base-200",
+  hoverClass = "bg-base-100",
   toolbarContent,
   showToolbar = true,
   elevatedToolbar = true,
   bottomBarItems,
   showBottomBar = true,
-  className = '',
+  className = "",
   breakpoint = 1024,
   rtl = false,
 }) => {
@@ -79,19 +80,24 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
     };
 
     checkIsDesktop();
-    window.addEventListener('resize', checkIsDesktop);
+    window.addEventListener("resize", checkIsDesktop);
 
-    return () => window.removeEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener("resize", checkIsDesktop);
   }, [breakpoint]);
 
-  const mainContentStyle = isDesktop && isDrawerOpen ? {
-    [rtl ? 'marginRight' : 'marginLeft']: miniDrawer ? miniDrawerWidth : drawerWidth
-  } : {};
+  const mainContentStyle =
+    isDesktop && isDrawerOpen
+      ? {
+          [rtl ? "marginRight" : "marginLeft"]: miniDrawer
+            ? miniDrawerWidth
+            : drawerWidth,
+        }
+      : {};
 
   const toggleMenuItem = (itemId: string) => {
-    setExpandedMenuItems(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId) 
+    setExpandedMenuItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
         : [...prev, itemId]
     );
   };
@@ -99,49 +105,49 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   const renderMenuItem = (item: MenuItem, level = 0) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedMenuItems.includes(item.id);
+    if (item.divider) {
+      return (
+        <div className="divider divider-start divider-primary mt-4">{item.label}</div>
+      );
+    }
     
     const itemContent = (
-      <div 
+      <div
         className={`
           flex items-center gap-3 py-2 px-4 rounded 
           ${pathName === item.href ? `${activeClass}` : `hover:${hoverClass}`} 
           transition-colors cursor-pointer
-          ${level > 0 ? 'ml-4' : ''}
+          ${level > 0 ? "ml-4" : ""}
         `}
       >
-        {item.icon && (
-          <span className="flex-shrink-0">{item.icon}</span>
-        )}
-        
+        {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
+
         {(!miniDrawer || !isDesktop || !isDrawerOpen) && (
           <span className="truncate">{item.label}</span>
         )}
-        
       </div>
     );
 
     const itemContentWithChildren = (
-      <div 
+      <div
         className={`
           flex items-center gap-3 py-2 px-4 rounded 
           transition-colors cursor-pointer
-          ${level > 0 ? 'ml-4' : ''}
+          ${level > 0 ? "ml-4" : ""}
         `}
         onClick={() => {
-            toggleMenuItem(item.id)
+          toggleMenuItem(item.id);
         }}
       >
-        {item.icon && (
-          <span className="flex-shrink-0">{item.icon}</span>
-        )}
-        
+        {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
+
         {(!miniDrawer || !isDesktop || !isDrawerOpen) && (
           <span className="truncate">{item.label}</span>
         )}
-        
+
         {hasChildren && !miniDrawer && (
-          <span className={`${rtl ? 'mr-auto' : 'ml-auto'}`}>
-            {isExpanded ? '▼' : '▶'}
+          <span className={`${rtl ? "mr-auto" : "ml-auto"}`}>
+            {isExpanded ? "▼" : "▶"}
           </span>
         )}
       </div>
@@ -154,12 +160,12 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
             {itemContent}
           </Link>
         ) : (
-            itemContentWithChildren
+          itemContentWithChildren
         )}
-        
+
         {hasChildren && isExpanded && !miniDrawer && (
           <ul className="mt-1 space-y-1">
-            {item.children!.map(child => renderMenuItem(child, level + 1))}
+            {item.children!.map((child) => renderMenuItem(child, level + 1))}
           </ul>
         )}
       </li>
@@ -169,19 +175,27 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   const renderDrawerContent = () => (
     <aside className={`w-full ${bgColor} h-full flex flex-col`}>
       {drawerHeader && (
-        <div className={`p-4 ${miniDrawer && isDesktop && isDrawerOpen ? 'flex justify-center' : ''}`}>
+        <div
+          className={`p-4 ${
+            miniDrawer && isDesktop && isDrawerOpen ? "flex justify-center" : ""
+          }`}
+        >
           {drawerHeader}
         </div>
       )}
-      
+
       <nav className="flex-1 overflow-y-auto">
         <ul className="space-y-2 p-2">
-          {drawerMenuItems.map(item => renderMenuItem(item))}
+          {drawerMenuItems.map((item) => renderMenuItem(item))}
         </ul>
       </nav>
-      
+
       {drawerFooter && (
-        <div className={`p-4 mt-auto ${miniDrawer && isDesktop && isDrawerOpen ? 'flex justify-center' : ''}`}>
+        <div
+          className={`p-4 mt-auto ${
+            miniDrawer && isDesktop && isDrawerOpen ? "flex justify-center" : ""
+          }`}
+        >
           {drawerFooter}
         </div>
       )}
@@ -189,18 +203,30 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   );
 
   return (
-    <div className={`min-h-screen ${rtl ? 'rtl' : 'ltr'}`}>
+    <div className={`min-h-screen ${rtl ? "rtl" : "ltr"}`}>
       {/* Fixed Desktop Drawer */}
       {showDrawer && isDesktop && (
-        <div 
-          className={`fixed top-0 ${rtl ? 'right-0' : 'left-0'} h-full transition-all duration-300`}
-          style={{ 
-            width: isDrawerOpen ? (miniDrawer ? miniDrawerWidth : drawerWidth) : '0px',
-            contentVisibility: 'auto',
-            transform: isDrawerOpen ? 'translateX(0)' : `translateX(${rtl ? '100%' : '-100%'})`
+        <div
+          className={`fixed top-0 ${
+            rtl ? "right-0" : "left-0"
+          } h-full transition-all duration-300`}
+          style={{
+            width: isDrawerOpen
+              ? miniDrawer
+                ? miniDrawerWidth
+                : drawerWidth
+              : "0px",
+            contentVisibility: "auto",
+            transform: isDrawerOpen
+              ? "translateX(0)"
+              : `translateX(${rtl ? "100%" : "-100%"})`,
           }}
         >
-          <div className={`h-full bg-white ${rtl ? 'border-l' : 'border-r'} border-base-300`}>
+          <div
+            className={`h-full bg-white ${
+              rtl ? "border-l" : "border-r"
+            } border-base-300`}
+          >
             {renderDrawerContent()}
           </div>
         </div>
@@ -208,27 +234,39 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
 
       {/* Mobile Drawer */}
       {showDrawer && !isDesktop && (
-        <div 
+        <div
           className={`
             fixed inset-0 bg-black/50 z-40 transition-opacity duration-300
-            ${isMobileDrawerOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
+            ${
+              isMobileDrawerOpen
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+            }
           `}
           onClick={() => setIsMobileDrawerOpen(false)}
         >
-          <div 
+          <div
             className={`
-              fixed top-0 ${rtl ? 'right-0' : 'left-0'} h-full bg-white transition-transform duration-300
-              ${isMobileDrawerOpen ? 'translate-x-0' : rtl ? 'translate-x-full' : '-translate-x-full'}
+              fixed top-0 ${
+                rtl ? "right-0" : "left-0"
+              } h-full bg-white transition-transform duration-300
+              ${
+                isMobileDrawerOpen
+                  ? "translate-x-0"
+                  : rtl
+                  ? "translate-x-full"
+                  : "-translate-x-full"
+              }
             `}
             style={{ width: drawerWidth }}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {renderDrawerContent()}
           </div>
         </div>
       )}
 
-      <div 
+      <div
         className={`flex flex-col min-h-screen transition-all duration-300 ${className}`}
         style={mainContentStyle}
       >
@@ -262,15 +300,11 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
         )}
 
         {/* Main Content */}
-        <main className="flex-1">
-          {children}
-        </main>
+        <main className="flex-1">{children}</main>
 
         {/* Bottom Bar */}
         {showBottomBar && bottomBarItems && !isDesktop && (
-          <BottomBar
-            items={bottomBarItems}
-          />
+          <BottomBar items={bottomBarItems} />
         )}
       </div>
     </div>

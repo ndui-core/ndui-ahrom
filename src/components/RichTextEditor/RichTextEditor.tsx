@@ -1,38 +1,42 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Button from '../Button/Button';
 
 interface RichTextEditorProps {
   name: string;
-  content: string;
-  onChange: (content: string) => void;
   label?: string;
-  error?: string;
   className?: string;
   placeholder?: string;
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
   name,
-  content,
-  onChange,
   label,
-  error,
   className = '',
   placeholder = ''
 }) => {
+  const { register, setValue, getValues, formState: { errors } } = useFormContext();
+  const error = errors[name]?.message as string | undefined;
+  const initialContent = getValues(name) || '';
+
   const editor = useEditor({
     extensions: [StarterKit],
-    content,
+    content: initialContent,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      setValue(name, editor.getHTML(), { shouldValidate: true });
     }
   });
 
-  if (!editor) {
-    return null;
-  }
+  // مقدار پیش‌فرض را روی ویرایشگر ست کنیم
+  useEffect(() => {
+    if (editor && initialContent) {
+      editor.commands.setContent(initialContent);
+    }
+  }, [editor, initialContent]);
+
+  if (!editor) return null;
 
   return (
     <div className="form-control w-full">
@@ -71,9 +75,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           </Button>
         </div>
         
-        <EditorContent placeholder={placeholder} name={name} editor={editor} />
+        <EditorContent placeholder={placeholder} editor={editor} />
       </div>
-      
+
       {error && (
         <label className="label">
           <span className="label-text-alt text-error">{error}</span>

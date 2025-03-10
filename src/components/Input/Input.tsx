@@ -4,6 +4,8 @@ import { useFormContext } from "react-hook-form";
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   label?: string;
+  labelClassName?: string;
+  errorClassName?: string;
   className?: string;
   variant?: "bordered" | "ghost" | "primary";
   inputSize?: "xs" | "sm" | "md" | "lg";
@@ -14,6 +16,8 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 const Input: React.FC<InputProps> = ({ 
   name, 
   label, 
+  labelClassName = "",
+  errorClassName = "",
   variant = "bordered", 
   inputSize = "md", 
   className = "", 
@@ -21,26 +25,23 @@ const Input: React.FC<InputProps> = ({
   append,
   ...props 
 }) => {
-  const methods = useFormContext();
-  if (!methods) {
-    console.error("❌ useFormContext() is null! Make sure this Input component is inside a FormProvider.");
-    return null;
-  }
-
+  const methods = useFormContext() ?? { register: () => ({}), formState: { errors: {} } };
   const { register, formState: { errors } } = methods;
   const error = errors[name]?.message as string | undefined;
+
+  const registerOptions = props.type === "number" ? { valueAsNumber: true } : {};
 
   const baseClass = `input input-${variant} input-${inputSize} ${error ? "input-error" : ""} ${className}`;
 
   return (
     <div className="form-control w-full">
       {label && (
-        <label className="label">
+        <label className={`label ${labelClassName}`}>
           <span className="label-text">{label}</span>
         </label>
       )}
       
-      <div className="flex flex-row-reverse ">
+      <div className="flex flex-row-reverse">
         {prepend && (
           <div className="px-1 flex flex-col justify-center">
             {prepend}
@@ -48,14 +49,11 @@ const Input: React.FC<InputProps> = ({
         )}
         
         <input 
-          {...register(name, {
-            valueAsNumber: props.type === "number",
-          })} 
+          aria-invalid={!!error}
+          {...register(name, registerOptions)} 
           className={`
             ${baseClass}
-            ${prepend ? '' : ''}
-            ${append ? '' : ''}
-            ${prepend || append ? 'flex-1' : 'w-full'}
+            ${prepend || append ? "flex-1" : "w-full"}
           `} 
           {...props} 
         />
@@ -68,7 +66,7 @@ const Input: React.FC<InputProps> = ({
       </div>
       
       {error && (
-        <label className="label">
+        <label className={`label ${errorClassName}`}>
           <span className="label-text-alt text-error">{error}</span>
         </label>
       )}
