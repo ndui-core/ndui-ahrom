@@ -4,6 +4,7 @@ import Button from "../Button/Button";
 import Input from "../Input/Input";
 import Select from "../Select/Select";
 import Card from "../Card/Card";
+import Pagination from "./Pagination";
 
 const TableIcon = () => (
   <svg
@@ -98,8 +99,8 @@ export interface TableProps {
   onLimitChange?: (limit: number) => void;
   rowsPerPageOptions?: number[];
   onRowClick?: (row: any, index: number) => void;
-  noDataMessage?: string;
-  loadingMessage?: string;
+  noDataMessage?: React.ReactNode;
+  loadingMessage?: React.ReactNode;
   expandable?: boolean;
   tableCardView?: boolean;
   renderExpandedRow?: (row: any) => React.ReactNode;
@@ -114,6 +115,12 @@ export interface TableProps {
     table?: React.ReactNode;
     card?: React.ReactNode;
     list?: React.ReactNode;
+  };
+  paginationUI?: {
+    className?: string;
+    next?: React.ReactNode;
+    prev?: React.ReactNode;
+    notFound?: React.ReactNode;
   };
   listItemHeight?: string;
   listItemClassName?: string;
@@ -140,14 +147,15 @@ const Table: React.FC<TableProps> = ({
   renderExpandedRow,
   defaultViewMode = "table",
   gridValue = { sm: 1, md: 2, lg: 3, xl: 3 },
-  iconViewMode = { 
-    card: <CardIcon />, 
-    table: <TableIcon />, 
-    list: <ListIcon /> 
+  iconViewMode = {
+    card: <CardIcon />,
+    table: <TableIcon />,
+    list: <ListIcon />,
   },
   listItemHeight = "auto",
   listItemClassName = "",
   listItemRender,
+  paginationUI,
 }) => {
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDesc, setSortDesc] = useState(false);
@@ -155,7 +163,9 @@ const Table: React.FC<TableProps> = ({
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const [viewMode, setViewMode] = useState<"table" | "card" | "list">(defaultViewMode);
+  const [viewMode, setViewMode] = useState<"table" | "card" | "list">(
+    defaultViewMode
+  );
   const tableRef = useRef<HTMLDivElement>(null);
   const resizingColumn = useRef<string | null>(null);
   const startX = useRef<number>(0);
@@ -224,7 +234,7 @@ const Table: React.FC<TableProps> = ({
 
   // Handle selection
   const handleSelectAll = () => {
-    console.log('TODO')
+    console.log("TODO");
     // const newSelected = selected.length === data.length ? [] : data;
     // setSelected(newSelected);
     // onSelectionChange?.(newSelected);
@@ -291,7 +301,11 @@ const Table: React.FC<TableProps> = ({
 
   // Render table view
   const renderTableView = () => (
-    <div className={`overflow-x-auto ${tableCardView ? 'bg-white border-2 p-2 rounded-lg' : ''}`}>
+    <div
+      className={`overflow-x-auto ${
+        tableCardView ? "bg-white border-2 p-2 rounded-lg" : ""
+      }`}
+    >
       <table className="table w-full">
         <thead>
           <tr>
@@ -494,7 +508,9 @@ const Table: React.FC<TableProps> = ({
 
   // Render card view
   const renderCardView = () => (
-    <div className={`grid grid-cols-${gridValue.sm} md:grid-cols-${gridValue.md} lg:grid-cols-${gridValue.lg}  xl:grid-cols-${gridValue.xl} gap-2`}>
+    <div
+      className={`grid grid-cols-${gridValue.sm} md:grid-cols-${gridValue.md} lg:grid-cols-${gridValue.lg}  xl:grid-cols-${gridValue.xl} gap-2`}
+    >
       {loading ? (
         <div className="col-span-full text-center p-4" role="status">
           {loadingMessage}
@@ -579,7 +595,7 @@ const Table: React.FC<TableProps> = ({
           // Use custom list item renderer if provided
           if (listItemRender) {
             return (
-              <div 
+              <div
                 key={rowIndex}
                 className={`
                   
@@ -602,7 +618,7 @@ const Table: React.FC<TableProps> = ({
 
           // Default list item rendering
           return (
-            <div 
+            <div
               key={rowIndex}
               className={`
                 bg-white p-4 rounded-lg border border-base-300
@@ -648,7 +664,9 @@ const Table: React.FC<TableProps> = ({
               <div className="flex flex-col gap-2">
                 {columns.map((column) => (
                   <div key={column.name} className="flex justify-between">
-                    <span className="font-bold text-primary">{column.label}:</span>
+                    <span className="font-bold text-primary">
+                      {column.label}:
+                    </span>
                     <div>{getCellContent(row, column)}</div>
                   </div>
                 ))}
@@ -681,77 +699,42 @@ const Table: React.FC<TableProps> = ({
       role="table"
       aria-label={title}
     >
-      <div className="flex justify-between items-center p-4">
-        {title && (
-          <div className="font-bold text-lg" role="heading" aria-level={1}>
-            {title}
+      <div className="flex justify-between items-center py-2 lg:p-4">
+        {showIconViews && (
+          <div className="flex items-center gap-1">
+            <Button
+              variant={viewMode === "table" ? "primary" : "ghost"}
+              onClick={() => setViewMode("table")}
+              aria-label="Table view"
+              size="sm"
+              icon={iconViewMode.table}
+            />
+            <Button
+              variant={viewMode === "list" ? "primary" : "ghost"}
+              onClick={() => setViewMode("list")}
+              aria-label="List view"
+              size="sm"
+              icon={iconViewMode.list}
+            />
           </div>
         )}
-
-        {showIconViews && <div className="flex items-center gap-2">
-          <Button
-            variant={viewMode === "table" ? "primary" : "ghost"}
-            onClick={() => setViewMode("table")}
-            aria-label="Table view"
-            icon={iconViewMode.table}
-          />
-          <Button
-            variant={viewMode === "list" ? "primary" : "ghost"}
-            onClick={() => setViewMode("list")}
-            aria-label="List view"
-            icon={iconViewMode.list}
-          />
-        </div>}
       </div>
 
-      {viewMode === "table" 
-        ? renderTableView() 
-        : viewMode === "card" 
-          ? renderListView() 
-          : renderListView()}
+      {viewMode === "table"
+        ? renderTableView()
+        : viewMode === "card"
+        ? renderListView()
+        : renderListView()}
 
-      {pagination && (
-        <div className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
-          {/* <Select
-              options={rowsPerPageOptions.map((option) => ({
-                value: option.toString(),
-                label: option.toString(),
-              }))}
-              value={pagination.limit.toString()}
-              onChange={(e) => {
-                handleLimitChange(Number(e.target.value));
-              }}
-              size="sm"
-              className="w-24"
-            /> */}
-          <div className="flex items-end gap-2">
-            <span>
-              {pagination.total > 0 
-                ? `${(pagination.page - 1) * pagination.limit + 1}-${Math.min(pagination.page * pagination.limit, pagination.total)} of ${pagination.total}`
-                : '0-0 از 0'}
-            </span>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="ghost"
-                disabled={pagination.page === 1}
-                onClick={() => handlePageChange(pagination.page - 1)}
-                aria-label="Previous page"
-              >
-                «
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                disabled={pagination.page >= pagination.pages}
-                onClick={() => handlePageChange(pagination.page + 1)}
-                aria-label="Next page"
-              >
-                »
-              </Button>
-            </div>
-          </div>
-        </div>
+      {pagination && pagination.pages > 1 && (
+        <Pagination
+          totalPages={pagination.pages}
+          currentPage={pagination.page}
+          onPageChange={
+            onPageChange ? onPageChange : (page: number) => console.error(page)
+          }
+          paginationUI={paginationUI}
+        />
       )}
     </div>
   );
