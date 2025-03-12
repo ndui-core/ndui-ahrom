@@ -7,21 +7,28 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
   paginationUI?: {
     className?: string;
+    first?: React.ReactNode;
+    last?: React.ReactNode;
     next?: React.ReactNode;
     prev?: React.ReactNode;
     notFound?: React.ReactNode;
   };
 }
 
-const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPageChange, paginationUI }) => {
+const Pagination: React.FC<PaginationProps> = ({
+  totalPages,
+  currentPage,
+  onPageChange,
+  paginationUI,
+}) => {
   const renderPageNumbers = useMemo(() => {
     if (totalPages <= 1) return null;
 
     const pages = [];
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, currentPage + 2);
+    let startPage = Math.max(2, currentPage - 2);
+    let endPage = Math.min(totalPages - 1, currentPage + 2);
 
-    if (startPage > 1) pages.push(<span key="start">...</span>);
+    if (startPage > 2) pages.push(<span key="start">...</span>);
 
     for (let i = startPage; i <= endPage; i++) {
       pages.push(
@@ -37,7 +44,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
       );
     }
 
-    if (endPage < totalPages) pages.push(<span key="end">...</span>);
+    if (endPage < totalPages - 1) pages.push(<span key="end">...</span>);
 
     return pages;
   }, [totalPages, currentPage, onPageChange]);
@@ -91,13 +98,75 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPage
   );
 
   return (
-    <div className={`flex items-center justify-between gap-4 bg-gray-100 p-2 mt-2 rounded-lg ${paginationUI?.className || ""}`}>
+    <div
+      className={`flex items-center justify-between gap-4 bg-gray-100 p-2 mt-2 rounded-lg ${
+        paginationUI?.className || ""
+      }`}
+    >
       <span className="text-sm font-medium text-gray-700">
-        {totalPages === 0 ? paginationUI?.notFound || "هیچ موردی یافت نشد" : `صفحه ${currentPage} از ${totalPages}`}
+        {totalPages === 0
+          ? paginationUI?.notFound || "هیچ موردی یافت نشد"
+          : `صفحه ${currentPage} از ${totalPages}`}
       </span>
 
-      <div className="hidden md:flex items-center gap-1">{renderPageNumbers}</div>
+      {/* Desktop View */}
+      <div className="hidden md:flex items-center gap-1">
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(1)}
+        >
+          {paginationUI?.first || "««"}
+        </Button>
 
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        >
+          {paginationUI?.prev || "«"}
+        </Button>
+
+        <Button
+          size="sm"
+          variant={1 === currentPage ? "primary" : "ghost"}
+          onClick={() => onPageChange(1)}
+        >
+          1
+        </Button>
+
+        {renderPageNumbers}
+
+        <Button
+          size="sm"
+          variant={totalPages === currentPage ? "primary" : "ghost"}
+          onClick={() => onPageChange(totalPages)}
+        >
+          {totalPages}
+        </Button>
+
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={currentPage >= totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          {paginationUI?.next || "»"}
+        </Button>
+
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={currentPage >= totalPages}
+          onClick={() => onPageChange(totalPages)}
+        >
+          {paginationUI?.last || "»»"}
+        </Button>
+      </div>
+
+      {/* Mobile View (remains the same) */}
       <div className="flex md:hidden">{renderMobilePagination()}</div>
     </div>
   );

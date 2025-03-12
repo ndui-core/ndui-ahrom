@@ -118,6 +118,8 @@ export interface TableProps {
   };
   paginationUI?: {
     className?: string;
+    first?: React.ReactNode;
+    last?: React.ReactNode;
     next?: React.ReactNode;
     prev?: React.ReactNode;
     notFound?: React.ReactNode;
