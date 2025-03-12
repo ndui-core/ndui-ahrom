@@ -1,7 +1,5 @@
-"use client"; 
-
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import ToastContainer from "./ToastContainer";
+"use client";
+import React, { createContext, useContext, useState } from "react";
 
 interface Toast {
   id: number;
@@ -10,36 +8,32 @@ interface Toast {
 }
 
 interface ToastContextType {
-  showToast: (message: string, type?: Toast["type"], duration?: number) => void;
+  toasts: Toast[];
+  showToast: (message: string, type: Toast["type"]) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-interface ToastProviderProps {
-  children: ReactNode;
-}
-
-export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = (message: string, type: Toast["type"] = "success", duration = 3000) => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
+  const showToast = (message: string, type: Toast["type"]) => {
+    const newToast: Toast = { id: Date.now(), message, type };
+    setToasts((prev) => [...prev, newToast]);
 
     setTimeout(() => {
-      setToasts((prev) => prev.filter((toast) => toast.id !== id));
-    }, duration);
+      setToasts((prev) => prev.filter((t) => t.id !== newToast.id));
+    }, 3000);
   };
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={{ toasts, showToast }}>
       {children}
-      <ToastContainer toasts={toasts} />
     </ToastContext.Provider>
   );
 };
 
-export const useToast = (): ToastContextType => {
+export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {
     throw new Error("useToast must be used within a ToastProvider");

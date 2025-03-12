@@ -107,7 +107,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
     const isExpanded = expandedMenuItems.includes(item.id);
     if (item.divider) {
       return (
-        <div className="divider divider-start divider-primary mt-4">{item.label}</div>
+        <li className="divider divider-start divider-primary">{item.label}</li>
       );
     }
     

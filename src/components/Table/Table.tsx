@@ -567,7 +567,7 @@ const Table: React.FC<TableProps> = ({
 
   // Render list view
   const renderListView = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4">
       {loading ? (
         <div className="text-center p-4" role="status">
           {loadingMessage}
