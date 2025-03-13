@@ -126,6 +126,7 @@ export interface TableProps {
   };
   listItemHeight?: string;
   listItemClassName?: string;
+  listClassName?: string;
   listItemRender?: (row: any, columns: Column[]) => React.ReactNode;
 }
 
@@ -156,6 +157,7 @@ const Table: React.FC<TableProps> = ({
   },
   listItemHeight = "auto",
   listItemClassName = "",
+  listClassName,
   listItemRender,
   paginationUI,
 }) => {
@@ -585,7 +587,9 @@ const Table: React.FC<TableProps> = ({
 
   // Render list view
   const renderListView = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4">
+    <div className={`
+    ${ listClassName? listClassName: 'grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4'}
+    `}>
       {loading ? (
         <div className="text-center p-4" role="status">
           {loadingMessage}

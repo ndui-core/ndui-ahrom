@@ -11,6 +11,7 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
   options: Option[];
   name: string;
   placeholder?: string;
+  renderOption?: (option: Option) => React.ReactNode;
   size?: "xs" | "sm" | "md" | "lg";
 }
 
@@ -18,6 +19,7 @@ const Select: React.FC<SelectProps> = ({
   name,
   label,
   options,
+  renderOption,
   size = "md",
   className = "",
   placeholder = "",
@@ -48,10 +50,17 @@ const Select: React.FC<SelectProps> = ({
         {...props}
         {...register(name)} 
       >
+          <option value="" disabled selected>{placeholder || "یک گزینه انتخاب کنید"}</option>
+
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
+          
+          renderOption ? (
+            renderOption(option)
+          ) : (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          )
         ))}
       </select>
       {error && (
