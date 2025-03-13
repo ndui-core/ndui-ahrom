@@ -1,6 +1,6 @@
 {
   "name": "ndui-ahrom",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "A UI library for Next.js using DaisyUI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
