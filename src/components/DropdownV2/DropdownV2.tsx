@@ -1,15 +1,17 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import Select, { components, StylesConfig } from "react-select";
 import Chip from "../Chips/Chips";
+import { motion, AnimatePresence } from "framer-motion";
 
 export interface Option {
-  value: string;
+  value: any; // Allow any type of value
   label: string;
   icon?: React.ReactNode;
   color?: string;
   description?: string;
   disabled?: boolean;
+  metadata?: any; // Additional data that might be needed
 }
 
 interface DropdownProps {
@@ -17,7 +19,6 @@ interface DropdownProps {
   options: Option[];
   label?: string;
   placeholder?: string;
-  returnValue?: string;
   isMulti?: boolean;
   isSearchable?: boolean;
   isClearable?: boolean;
@@ -25,7 +26,6 @@ interface DropdownProps {
   error?: string;
   className?: string;
   onChange?: (value: any) => void;
-  renderChip?: ({ data, removeProps }: any) => React.ReactNode;
   onInputChange?: (value: string) => void;
   customStyles?: StylesConfig;
   isDisabled?: boolean;
@@ -35,14 +35,20 @@ interface DropdownProps {
   noOptionsMessage?: string;
   loadingMessage?: string;
   groupBy?: (option: Option) => string;
+  formatOptionLabel?: (option: Option) => React.ReactNode;
+  formatSelectedLabel?: (option: Option) => React.ReactNode;
+  allowCreate?: boolean;
+  onCreateOption?: (inputValue: string) => void;
+  validateOption?: (option: Option) => boolean;
+  size?: "sm" | "md" | "lg";
+  renderChip?: (option: Option, onRemove: () => void) => React.ReactNode;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({
+const DropdownV2: React.FC<DropdownProps> = ({
   name,
   options,
-  renderChip,
   label,
-  placeholder = "انتخاب کنید...",
+  placeholder = "Select...",
   isMulti = false,
   isSearchable = true,
   isClearable = true,
@@ -50,20 +56,27 @@ const Dropdown: React.FC<DropdownProps> = ({
   className = "",
   onChange,
   onInputChange,
-  returnValue,
   customStyles,
   isDisabled = false,
   menuPlacement = "auto",
   required = false,
   helperText,
-  noOptionsMessage = "موردی یافت نشد",
-  loadingMessage = "در حال بارگذاری...",
+  noOptionsMessage = "No options found",
+  loadingMessage = "Loading...",
   groupBy,
+  formatOptionLabel,
+  formatSelectedLabel,
+  allowCreate = false,
+  onCreateOption,
+  validateOption,
+  size = "md",
+  renderChip,
 }) => {
   const methods = useFormContext();
+  const [inputValue, setInputValue] = useState("");
 
   if (!methods) {
-    console.warn("Dropdown باید درون FormProvider باشد.");
+    console.warn("Dropdown must be used within a FormProvider");
     return null;
   }
 
@@ -74,7 +87,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   const fieldError = errors[name]?.message as string;
 
-  // Memoize grouped options
+  // Group options if groupBy is provided
   const groupedOptions = useMemo(() => {
     if (!groupBy) return options;
 
@@ -93,22 +106,13 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   // Custom components
   const customComponents = {
-    MultiValue: ({ data, removeProps }: any) =>
-      renderChip ? (
-        renderChip({ data, removeProps })
-      ) : (
-        <Chip
-          label={data.label}
-          icon={data.icon}
-          onDelete={removeProps.onClick}
-          className="m-1 p-2"
-          color={data.color || "primary"}
-          variant="filled"
-        />
-      ),
     Option: ({ data, isSelected, isFocused, innerProps }: any) => (
-      <div
+      <motion.div
         {...innerProps}
+        initial={false}
+        animate={{
+          backgroundColor: isFocused ? "rgba(0,0,0,0.05)" : "transparent",
+        }}
         className={`
           flex items-center gap-2 px-4 py-2 cursor-pointer
           ${isSelected ? "bg-primary text-primary-content" : ""}
@@ -116,18 +120,46 @@ const Dropdown: React.FC<DropdownProps> = ({
           ${data.disabled ? "opacity-50 cursor-not-allowed" : ""}
         `}
       >
-        {data.icon && <span>{data.icon}</span>}
-        <div>
-          <div>{data.label}</div>
-          {data.description && (
-            <div className="text-sm opacity-70">{data.description}</div>
-          )}
-        </div>
-      </div>
+        {formatOptionLabel ? (
+          formatOptionLabel(data)
+        ) : (
+          <>
+            {data.icon && <span>{data.icon}</span>}
+            <div>
+              <div>{data.label}</div>
+              {data.description && (
+                <div className="text-sm opacity-70">{data.description}</div>
+              )}
+            </div>
+          </>
+        )}
+      </motion.div>
     ),
-    NoOptionsMessage: ({ children }: any) => (
+    MultiValue: ({ data, removeProps }: any) =>
+      renderChip ? (
+        renderChip(data, removeProps.onClick)
+      ) : (
+        <Chip
+          label={formatSelectedLabel ? formatSelectedLabel(data) : data.label}
+          icon={data.icon}
+          onDelete={removeProps.onClick}
+          className="m-1"
+          color={data.color || "primary"}
+          variant="filled"
+        />
+      ),
+    NoOptionsMessage: () => (
       <div className="text-center py-2 text-base-content/50">
-        <div>{noOptionsMessage}</div>
+        {allowCreate && inputValue ? (
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => onCreateOption?.(inputValue)}
+          >
+            Create "{inputValue}"
+          </button>
+        ) : (
+          noOptionsMessage
+        )}
       </div>
     ),
     LoadingMessage: () => (
@@ -141,9 +173,10 @@ const Dropdown: React.FC<DropdownProps> = ({
   // Handle value formatting
   const formatValue = useCallback(
     (fieldValue: any) => {
-      console.log("formatValue" , fieldValue)
       if (isMulti) {
-        return options.filter((option) => fieldValue?.includes(option.value));
+        return options.filter((option) => 
+          Array.isArray(fieldValue) && fieldValue.includes(option.value)
+        );
       }
       return options.find((option) => option.value === fieldValue) || null;
     },
@@ -153,19 +186,10 @@ const Dropdown: React.FC<DropdownProps> = ({
   // Handle change
   const handleChange = useCallback(
     (selectedOption: any, field: any) => {
-      console.log("handleChange selectedOption" , selectedOption)
-      console.log("handleChange field" , field)
       if (isMulti) {
         const values = selectedOption
-          ? (selectedOption as Option[]).map((opt) => {
-            if (returnValue) {
-              return {returnValue : opt.value}
-            } else {
-              return opt.value
-            }
-          })
+          ? (selectedOption as Option[]).map((opt) => opt.value)
           : [];
-          console.log("handleChange values" , values)
         field.onChange(values);
       } else {
         const value = selectedOption ? (selectedOption as Option).value : null;
@@ -176,13 +200,19 @@ const Dropdown: React.FC<DropdownProps> = ({
     [isMulti, onChange]
   );
 
+  const sizeClasses = {
+    sm: "min-h-[2rem]",
+    md: "min-h-[2.5rem]",
+    lg: "min-h-[3rem]",
+  };
+
   return (
     <div className="form-control w-full">
       {label && (
         <label className="label">
           <span className="label-text">
             {label}
-            {required && <span className="text-error mr-1">*</span>}
+            {required && <span className="text-error ml-1">*</span>}
           </span>
         </label>
       )}
@@ -195,7 +225,10 @@ const Dropdown: React.FC<DropdownProps> = ({
             {...field}
             value={formatValue(field.value)}
             onChange={(selectedOption) => handleChange(selectedOption, field)}
-            onInputChange={onInputChange}
+            onInputChange={(value) => {
+              setInputValue(value);
+              onInputChange?.(value);
+            }}
             options={groupBy ? groupedOptions : options}
             isMulti={isMulti}
             isSearchable={isSearchable}
@@ -210,13 +243,12 @@ const Dropdown: React.FC<DropdownProps> = ({
                 input input-bordered
                 ${fieldError ? "input-error" : ""}
                 ${state.isFocused ? "input-primary" : ""}
-                !min-h-[2.5rem]
+                ${sizeClasses[size]}
               `,
               menu: () => "bg-base-100 shadow-lg rounded-lg mt-1 p-1",
               menuList: () => "max-h-60",
               multiValue: () => "bg-transparent",
               placeholder: () => "text-base-content/50",
-              noOptionsMessage: () => "text-center py-2 text-base-content/50",
               group: () => "border-b last:border-b-0",
               groupHeading: () => "text-sm font-semibold px-3 py-2",
             }}
@@ -240,4 +272,4 @@ const Dropdown: React.FC<DropdownProps> = ({
   );
 };
 
-export default Dropdown;
+export default DropdownV2;

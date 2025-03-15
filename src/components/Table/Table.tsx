@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../Button/Button";
 import Input from "../Input/Input";
@@ -84,6 +84,7 @@ export interface Column {
 export interface TableProps {
   columns: Column[];
   data: any[];
+  defaultSelected?: any[]; // لیست مقادیر انتخاب‌شده پیش‌فرض
   title?: string;
   loading?: boolean;
   showIconViews?: boolean;
@@ -160,10 +161,11 @@ const Table: React.FC<TableProps> = ({
   listClassName,
   listItemRender,
   paginationUI,
+  defaultSelected = [],
 }) => {
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDesc, setSortDesc] = useState(false);
-  const [selected, setSelected] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any[]>(defaultSelected || []);
   const [expandedRows, setExpandedRows] = useState<string[]>([]);
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const [filters, setFilters] = useState<Record<string, string>>({});
@@ -175,6 +177,12 @@ const Table: React.FC<TableProps> = ({
   const startX = useRef<number>(0);
   const startWidth = useRef<number>(0);
 
+  useEffect(() => {
+    if (defaultSelected) {
+      setSelected(defaultSelected);
+    }
+  }, [defaultSelected]);
+  
   // Handle column resizing
   const handleResizeStart = (e: React.MouseEvent, columnName: string) => {
     e.preventDefault();
@@ -212,57 +220,62 @@ const Table: React.FC<TableProps> = ({
   }, []);
 
   // Handle filtering
-  // const filteredData = useMemo(() => {
-  //   return data.filter((row) => {
-  //     return Object.entries(filters).every(([field, value]) => {
-  //       if (!field) return true;
-  //       const cellValue = row[field]?.toString().toLowerCase();
-  //       return !value || cellValue?.includes(value.toLowerCase());
-  //     });
-  //   });
-  // }, [data, filters]);
+  const filteredData = useMemo(() => {
+    return data.filter((row) => {
+      return Object.entries(filters).every(([field, value]) => {
+        if (!field) return true;
+        const cellValue = row[field]?.toString().toLowerCase();
+        return !value || cellValue?.includes(value.toLowerCase());
+      });
+    });
+  }, [data, filters]);
 
   // Handle sorting
-  // const sortedData = useMemo(() => {
-  //   if (!sortBy) return filteredData;
+  const sortedData = useMemo(() => {
+    if (!sortBy) return filteredData;
 
-  //   return [...filteredData].sort((a, b) => {
-  //     const aValue = a[sortBy];
-  //     const bValue = b[sortBy];
+    return [...filteredData].sort((a, b) => {
+      const aValue = a[sortBy];
+      const bValue = b[sortBy];
 
-  //     if (aValue === bValue) return 0;
-  //     const comparison = aValue > bValue ? 1 : -1;
-  //     return sortDesc ? -comparison : comparison;
-  //   });
-  // }, [filteredData, sortBy, sortDesc]);
+      if (aValue === bValue) return 0;
+      const comparison = aValue > bValue ? 1 : -1;
+      return sortDesc ? -comparison : comparison;
+    });
+  }, [filteredData, sortBy, sortDesc]);
 
   // Handle selection
   const handleSelectAll = () => {
     console.log("TODO");
-    // const newSelected = selected.length === data.length ? [] : data;
-    // setSelected(newSelected);
-    // onSelectionChange?.(newSelected);
-  };
-
-  const handleSelectRow = (row: any) => {
-    let newSelected: any[];
-
-    if (selection === "single") {
-      newSelected = [row];
-    } else {
-      const selectedIndex = selected.indexOf(row);
-      if (selectedIndex === -1) {
-        newSelected = [...selected, row];
-      } else {
-        newSelected = selected.filter((_, index) => index !== selectedIndex);
-      }
-    }
-
+    const newSelected = selected.length === data.length ? [] : data;
     setSelected(newSelected);
     onSelectionChange?.(newSelected);
   };
 
-  const isSelected = (row: any) => selected.indexOf(row) !== -1;
+  const handleSelectRow = (row: any) => {
+    let newSelected: any[];
+  
+    if (selection === "single") {
+      newSelected = [row];
+    } else {
+      const selectedIndex = selected.findIndex(
+        (selectedRow) => selectedRow.id === row.id
+      );
+      if (selectedIndex === -1) {
+        newSelected = [...selected, row];
+      } else {
+        newSelected = selected.filter((selectedRow) => selectedRow.id !== row.id);
+      }
+    }
+  
+    setSelected(newSelected);
+    onSelectionChange?.(newSelected);
+  };
+  
+
+  const isSelected = (row: any) =>
+    selected.some((selectedRow) => selectedRow.id === row.id);
+  
 
   // Handle row expansion
   const toggleRowExpansion = (rowId: string) => {
