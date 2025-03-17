@@ -2,7 +2,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 
 interface Option {
-  value: string;
+  value: any;
   label: string;
 }
 

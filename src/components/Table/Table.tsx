@@ -177,47 +177,42 @@ const Table: React.FC<TableProps> = ({
   const startX = useRef<number>(0);
   const startWidth = useRef<number>(0);
 
-  useEffect(() => {
-    if (defaultSelected) {
-      setSelected(defaultSelected);
-    }
-  }, [defaultSelected]);
-  
-  // Handle column resizing
-  const handleResizeStart = (e: React.MouseEvent, columnName: string) => {
-    e.preventDefault();
-    resizingColumn.current = columnName;
-    startX.current = e.pageX;
-    startWidth.current = columnWidths[columnName] || 0;
 
-    document.addEventListener("mousemove", handleResizeMove);
-    document.addEventListener("mouseup", handleResizeEnd);
-  };
+  // // Handle column resizing
+  // const handleResizeStart = (e: React.MouseEvent, columnName: string) => {
+  //   e.preventDefault();
+  //   resizingColumn.current = columnName;
+  //   startX.current = e.pageX;
+  //   startWidth.current = columnWidths[columnName] || 0;
 
-  const handleResizeMove = (e: MouseEvent) => {
-    if (!resizingColumn.current) return;
+  //   document.addEventListener("mousemove", handleResizeMove);
+  //   document.addEventListener("mouseup", handleResizeEnd);
+  // };
 
-    const diff = e.pageX - startX.current;
-    const newWidth = Math.max(50, startWidth.current + diff);
+  // const handleResizeMove = (e: MouseEvent) => {
+  //   if (!resizingColumn.current) return;
 
-    setColumnWidths((prev) => ({
-      ...prev,
-      [resizingColumn.current!]: newWidth,
-    }));
-  };
+  //   const diff = e.pageX - startX.current;
+  //   const newWidth = Math.max(50, startWidth.current + diff);
 
-  const handleResizeEnd = () => {
-    resizingColumn.current = null;
-    document.removeEventListener("mousemove", handleResizeMove);
-    document.removeEventListener("mouseup", handleResizeEnd);
-  };
+  //   setColumnWidths((prev) => ({
+  //     ...prev,
+  //     [resizingColumn.current!]: newWidth,
+  //   }));
+  // };
 
-  useEffect(() => {
-    return () => {
-      document.removeEventListener("mousemove", handleResizeMove);
-      document.removeEventListener("mouseup", handleResizeEnd);
-    };
-  }, []);
+  // const handleResizeEnd = () => {
+  //   resizingColumn.current = null;
+  //   document.removeEventListener("mousemove", handleResizeMove);
+  //   document.removeEventListener("mouseup", handleResizeEnd);
+  // };
+
+  // useEffect(() => {
+  //   return () => {
+  //     document.removeEventListener("mousemove", handleResizeMove);
+  //     document.removeEventListener("mouseup", handleResizeEnd);
+  //   };
+  // }, []);
 
   // Handle filtering
   const filteredData = useMemo(() => {
@@ -254,7 +249,7 @@ const Table: React.FC<TableProps> = ({
 
   const handleSelectRow = (row: any) => {
     let newSelected: any[];
-  
+
     if (selection === "single") {
       newSelected = [row];
     } else {
@@ -264,18 +259,18 @@ const Table: React.FC<TableProps> = ({
       if (selectedIndex === -1) {
         newSelected = [...selected, row];
       } else {
-        newSelected = selected.filter((selectedRow) => selectedRow.id !== row.id);
+        newSelected = selected.filter(
+          (selectedRow) => selectedRow.id !== row.id
+        );
       }
     }
-  
+
     setSelected(newSelected);
     onSelectionChange?.(newSelected);
   };
-  
 
   const isSelected = (row: any) =>
     selected.some((selectedRow) => selectedRow.id === row.id);
-  
 
   // Handle row expansion
   const toggleRowExpansion = (rowId: string) => {
@@ -394,12 +389,6 @@ const Table: React.FC<TableProps> = ({
                     className="mt-2 w-full"
                   />
                 )}
-                <div
-                  className="absolute right-0 top-0 h-full w-1 cursor-col-resize"
-                  onMouseDown={(e) => handleResizeStart(e, column.name)}
-                  role="separator"
-                  aria-orientation="vertical"
-                />
               </th>
             ))}
           </tr>
@@ -600,9 +589,15 @@ const Table: React.FC<TableProps> = ({
 
   // Render list view
   const renderListView = () => (
-    <div className={`
-    ${ listClassName? listClassName: 'grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4'}
-    `}>
+    <div
+      className={`
+    ${
+      listClassName
+        ? listClassName
+        : "grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-4"
+    }
+    `}
+    >
       {loading ? (
         <div className="text-center p-4" role="status">
           {loadingMessage}
