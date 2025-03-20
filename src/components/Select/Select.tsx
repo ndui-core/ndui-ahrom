@@ -2,7 +2,7 @@ import React from "react";
 import { useFormContext } from "react-hook-form";
 
 interface Option {
-  value: any;
+  value: string | number;
   label: string;
 }
 
@@ -27,12 +27,11 @@ const Select: React.FC<SelectProps> = ({
 }) => {
   const methods = useFormContext();
   if (!methods) {
-    console.error("❌ useFormContext() is null! Make sure this Input component is inside a FormProvider.");
+    console.error("❌ useFormContext() is null! Make sure this Select component is inside a FormProvider.");
     return null;
   }
 
-
-  const { register, formState: { errors } } = methods;
+  const { register, setValue, formState: { errors } } = methods;
   const error = errors[name]?.message as string | undefined;
 
   return (
@@ -43,17 +42,24 @@ const Select: React.FC<SelectProps> = ({
         </label>
       )}
       <select
-      aria-placeholder={placeholder}
+        aria-placeholder={placeholder}
         className={`select select-bordered ${size ? `select-${size}` : ""} ${
           error ? "select-error" : ""
         } ${className}`}
         {...props}
-        {...register(name)} 
+        {...register(name, {
+          setValueAs: (value) => {
+            // اگر مقدار فقط عددی باشد، به عدد تبدیل شود، در غیر این صورت مقدار رشته‌ای نگه داشته شود.
+            return /^\d+$/.test(value) ? Number(value) : value;
+          },
+        })}
+        onChange={(e) => {
+          const selectedValue = e.target.value;
+          setValue(name, /^\d+$/.test(selectedValue) ? Number(selectedValue) : selectedValue);
+        }}
       >
-          <option value="" disabled selected>{placeholder || "یک گزینه انتخاب کنید"}</option>
-
-        {options.map((option) => (
-          
+        <option value="" disabled>{placeholder || "یک گزینه انتخاب کنید"}</option>
+        {options.map((option) =>
           renderOption ? (
             renderOption(option)
           ) : (
@@ -61,7 +67,7 @@ const Select: React.FC<SelectProps> = ({
               {option.label}
             </option>
           )
-        ))}
+        )}
       </select>
       {error && (
         <label className="label">

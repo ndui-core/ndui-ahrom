@@ -54,6 +54,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <Button
         size="sm"
         variant="ghost"
+        className={`${currentPage === 1 && 'hidden'}`}
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
       >
@@ -88,6 +89,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       <Button
         size="sm"
+        className={`${currentPage >= totalPages && 'hidden'}`}
         variant="ghost"
         disabled={currentPage >= totalPages}
         onClick={() => onPageChange(currentPage + 1)}
@@ -114,6 +116,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <Button
           size="sm"
           variant="ghost"
+        className={`${currentPage === 1 && 'hidden'}`}
           disabled={currentPage === 1}
           onClick={() => onPageChange(1)}
         >
@@ -123,6 +126,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <Button
           size="sm"
           variant="ghost"
+        className={`${currentPage === 1 && 'hidden'}`}
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
         >
@@ -150,6 +154,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <Button
           size="sm"
           variant="ghost"
+        className={`${currentPage >= totalPages && 'hidden'}`}
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}
         >
@@ -159,6 +164,7 @@ const Pagination: React.FC<PaginationProps> = ({
         <Button
           size="sm"
           variant="ghost"
+        className={`${currentPage >= totalPages && 'hidden'}`}
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(totalPages)}
         >
