@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import FocusTrap from 'focus-trap-react';
+import FocusTrap from "focus-trap-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ModalProps {
@@ -34,7 +34,7 @@ const Modal: React.FC<ModalProps> = ({
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
+      if (event.key === "Escape" && isOpen) {
         onClose();
       }
     };
@@ -42,38 +42,38 @@ const Modal: React.FC<ModalProps> = ({
     if (isOpen) {
       // Store the currently focused element
       previousActiveElement.current = document.activeElement as HTMLElement;
-      
+
       // Add event listener for escape key
-      document.addEventListener('keydown', handleEscape);
-      
+      document.addEventListener("keydown", handleEscape);
+
       // Prevent body scrolling
-      document.body.style.overflow = 'hidden';
-      
+      document.body.style.overflow = "hidden";
+
       // Add ARIA attributes to body
-      document.body.setAttribute('aria-hidden', 'true');
+      document.body.setAttribute("aria-hidden", "true");
     } else {
       // Restore focus when modal closes
       if (previousActiveElement.current) {
         previousActiveElement.current.focus();
       }
-      
+
       // Remove event listener
-      document.removeEventListener('keydown', handleEscape);
-      
+      document.removeEventListener("keydown", handleEscape);
+
       // Restore body scrolling
-      document.body.style.overflow = '';
-      
+      document.body.style.overflow = "";
+
       // Remove ARIA attributes from body
-      document.body.removeAttribute('aria-hidden');
-      
+      document.body.removeAttribute("aria-hidden");
+
       // Call onExited callback
       onExited?.();
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
-      document.body.removeAttribute('aria-hidden');
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "";
+      document.body.removeAttribute("aria-hidden");
     };
   }, [isOpen, onClose, onExited]);
 
@@ -83,30 +83,29 @@ const Modal: React.FC<ModalProps> = ({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
-      className={`modal-box ${sizeClass}`}
+      className={`modal-box ${sizeClass} bg-white !p-2`}
+      style={{
+        "scrollbarWidth": "none"
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? "modal-title" : undefined}
       ref={modalRef}
     >
+      <button
+        className="btn btn-sm btn-circle btn-ghost text-lg"
+        onClick={onClose}
+        aria-label="Close modal"
+      >
+        ✕
+      </button>
       {title && (
         <h3 className="font-bold text-lg mb-4" id="modal-title">
           {title}
         </h3>
       )}
       <div className="modal-content">{children}</div>
-      {footer && (
-        <div className="modal-action mt-6">
-          {footer}
-        </div>
-      )}
-      <button
-        className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-        onClick={onClose}
-        aria-label="Close modal"
-      >
-        ✕
-      </button>
+      {footer && <div className="modal-action mt-6">{footer}</div>}
     </motion.div>
   );
 
@@ -114,7 +113,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <FocusTrap>
-          <div 
+          <div
             className="modal modal-open"
             style={{ zIndex: parentId ? 100 : 50 }}
           >
