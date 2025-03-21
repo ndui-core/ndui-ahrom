@@ -1,26 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Button from '../Button/Button';
+import Link from "next/link";
+import React, { useEffect, useRef, useState } from "react";
 
 interface MenuItem {
-  id: string;
   label: React.ReactNode;
   icon?: React.ReactNode;
   onClick?: () => void;
+  href?: string;
   disabled?: boolean;
   divider?: boolean;
+  customRender?: () => React.ReactNode;
 }
 
 interface MenuProps {
   trigger: React.ReactNode;
   items: MenuItem[];
-  position?: 'bottom' | 'top' | 'left' | 'right';
+  position?: "left" | "right";
 }
 
-const Menu: React.FC<MenuProps> = ({
-  trigger,
-  items,
-  position = 'bottom',
-}) => {
+const Menu: React.FC<MenuProps> = ({ trigger, items, position = "right" }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -31,47 +28,57 @@ const Menu: React.FC<MenuProps> = ({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
-    <div className="relative" ref={menuRef}>
-      <div onClick={() => setIsOpen(!isOpen)}>
-        {trigger}
-      </div>
-      
+    <div
+      className={`dropdown ${position === "right" ? "dropdown-end" : ""}`}
+      ref={menuRef}
+    >
+      <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
+
       {isOpen && (
-        <div className={`
-          absolute z-50 bg-base-100 rounded-lg shadow-lg py-2 min-w-[200px]
-          ${position === 'top' ? 'bottom-full mb-2' : ''}
-          ${position === 'bottom' ? 'top-full mt-2' : ''}
-          ${position === 'left' ? 'right-full mr-2' : ''}
-          ${position === 'right' ? 'left-full ml-2' : ''}
-        `}>
+        <ul
+          className={`menu dropdown-content bg-white rounded-box z-50 mt-2 w-52 p-2 shadow-sm`}
+        >
           {items.map((item, index) => (
-            <React.Fragment key={item.id}>
+            <div key={index}>
               {item.divider ? (
                 <div className="my-2 border-t border-base-300" />
               ) : (
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start"
-                  onClick={() => {
-                    if (!item.disabled) {
-                      item.onClick?.();
-                      setIsOpen(false);
-                    }
-                  }}
-                  disabled={item.disabled}
-                >
-                  {item.icon && <span className="mr-2">{item.icon}</span>}
-                  {item.label}
-                </Button>
+                <li>
+                  {item.customRender ? (
+                    item.customRender()
+                  ) : item.href ? (
+                    <Link
+                      href={item.href}
+                      className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-base-300"
+                    >
+                      {item.icon && <span>{item.icon}</span>}
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <button
+                      className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-base-300"
+                      onClick={() => {
+                        if (!item.disabled) {
+                          item.onClick?.();
+                          setIsOpen(false);
+                        }
+                      }}
+                      disabled={item.disabled}
+                    >
+                      {item.icon && <span>{item.icon}</span>}
+                      {item.label}
+                    </button>
+                  )}
+                </li>
               )}
-            </React.Fragment>
+            </div>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
