@@ -32,7 +32,7 @@ type ButtonBaseProps = Omit<
 interface ButtonSelectWithTableProps extends ButtonBaseProps {
   columns: any[];
   data: any[];
-  onSelect: (selectedItems: any[]) => void;
+  onSelect: (selectedItems: any) => void; // در multiple آرایه و در single شیء یا null
   modalTitle?: string;
   tableProps?: Omit<React.ComponentProps<typeof Table>, "columns" | "data">;
   name: string;
@@ -40,6 +40,10 @@ interface ButtonSelectWithTableProps extends ButtonBaseProps {
   iconViewMode?: {
     remove?: React.ReactNode;
   };
+  /**
+   * Selection mode can be either "multiple" or "single".
+   */
+  selectionMode?: "multiple" | "single";
 }
 
 const ButtonSelectWithTable: React.FC<ButtonSelectWithTableProps> = ({
@@ -52,6 +56,7 @@ const ButtonSelectWithTable: React.FC<ButtonSelectWithTableProps> = ({
   name,
   label,
   iconViewMode = { remove: <RemoveIcon /> },
+  selectionMode = "multiple",
   ...buttonProps
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,17 +65,35 @@ const ButtonSelectWithTable: React.FC<ButtonSelectWithTableProps> = ({
   if (!formContext) return null;
 
   const { setValue, watch } = formContext;
-  const selectedItems = watch(name) || [];
+  // مقدار واقعی از فرم؛ در حالت multiple آرایه و در حالت single شیء یا null
+  const selectedValue = watch(name);
+  // برای استفاده در جدول، همیشه آرایه است
+  const selectedItems = selectionMode === "multiple"
+    ? selectedValue || []
+    : selectedValue ? [selectedValue] : [];
 
   const handleSelectionChange = (newSelected: any[]) => {
-    setValue(name, newSelected);
+    if (selectionMode === "single") {
+      const selectedObj = newSelected[0] || null;
+      setValue(name, selectedObj);
+      onSelect(selectedObj);
+    } else {
+      setValue(name, newSelected);
+      onSelect(newSelected);
+    }
   };
 
   const handleRemoveItem = (itemId: number) => {
-    const newSelected = selectedItems.filter(
-      (item: { id: number }) => item.id !== itemId
-    );
-    setValue(name, newSelected);
+    if (selectionMode === "single") {
+      setValue(name, null);
+      onSelect(null);
+    } else {
+      const newSelected = selectedItems.filter(
+        (item: { id: number }) => item.id !== itemId
+      );
+      setValue(name, newSelected);
+      onSelect(newSelected);
+    }
   };
 
   return (
@@ -90,7 +113,10 @@ const ButtonSelectWithTable: React.FC<ButtonSelectWithTableProps> = ({
         {selectedItems.length > 0 ? (
           <div className="flex flex-wrap gap-2 mt-2">
             {selectedItems.map((item: { id: any; name: any }) => (
-              <span key={item.id}>{item.name} , </span>
+              <span key={item.id}>
+                {item.name}
+                {selectionMode === "multiple" && " , "}
+              </span>
             ))}
           </div>
         ) : (
@@ -111,6 +137,7 @@ const ButtonSelectWithTable: React.FC<ButtonSelectWithTableProps> = ({
                   e.stopPropagation();
                   handleRemoveItem(item.id);
                 }}
+                type="button"
                 className="text-error"
               >
                 {iconViewMode.remove}
@@ -139,7 +166,7 @@ const ButtonSelectWithTable: React.FC<ButtonSelectWithTableProps> = ({
         <Table
           columns={columns}
           data={data}
-          selection="multiple"
+          selection={selectionMode} // انتخاب mode به جدول پاس داده می‌شود
           defaultSelected={selectedItems}
           onSelectionChange={handleSelectionChange}
           showIconViews={false}
@@ -147,13 +174,15 @@ const ButtonSelectWithTable: React.FC<ButtonSelectWithTableProps> = ({
         />
       </Modal>
 
-      {/* مقدار مخفی فرم */}
+      {/* مقدار مخفی فرم: در حالت multiple آرایه‌ای از آی‌دی‌ها و در حالت single تنها آی‌دی انتخاب شده */}
       <input
         type="hidden"
         name={name}
-        value={JSON.stringify(
-          selectedItems.map((item: { id: any }) => item.id)
-        )}
+        value={
+          selectionMode === "multiple"
+            ? JSON.stringify(selectedItems.map((item: { id: any }) => item.id))
+            : selectedValue ? selectedValue.id : ""
+        }
       />
     </div>
   );

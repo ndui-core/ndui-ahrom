@@ -31,8 +31,9 @@ const Select: React.FC<SelectProps> = ({
     return null;
   }
 
-  const { register, setValue, formState: { errors } } = methods;
+  const { register, setValue, watch, formState: { errors } } = methods;
   const error = errors[name]?.message as string | undefined;
+  const selectedValue = watch(name) ?? "";
 
   return (
     <div className="form-control w-full">
@@ -46,12 +47,10 @@ const Select: React.FC<SelectProps> = ({
         className={`select select-bordered ${size ? `select-${size}` : ""} ${
           error ? "select-error" : ""
         } ${className}`}
+        value={selectedValue}
         {...props}
         {...register(name, {
-          setValueAs: (value) => {
-            // اگر مقدار فقط عددی باشد، به عدد تبدیل شود، در غیر این صورت مقدار رشته‌ای نگه داشته شود.
-            return /^\d+$/.test(value) ? Number(value) : value;
-          },
+          setValueAs: (value) => (/^\d+$/.test(value) ? Number(value) : value),
         })}
         onChange={(e) => {
           const selectedValue = e.target.value;

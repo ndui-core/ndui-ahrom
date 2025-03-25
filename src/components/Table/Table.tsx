@@ -713,9 +713,8 @@ const Table: React.FC<TableProps> = ({
       role="table"
       aria-label={title}
     >
-      <div className="flex justify-between items-center py-2 lg:p-4">
         {showIconViews && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 py-2 lg:p-4">
             <Button
               variant={viewMode === "table" ? "primary" : "ghost"}
               onClick={() => setViewMode("table")}
@@ -732,7 +731,6 @@ const Table: React.FC<TableProps> = ({
             />
           </div>
         )}
-      </div>
 
       {viewMode === "table"
         ? renderTableView()

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Toolbar from "../Toolbar/Toolbar";
-import BottomBar from "../BottomBar/BottomBar";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import BottomBar from "../BottomBar/BottomBar";
+import Toolbar from "../Toolbar/Toolbar";
 
 interface MenuItem {
   id: string;
@@ -25,6 +25,7 @@ interface LayoutWrapperProps {
   showDrawer?: boolean;
   miniDrawer?: boolean;
   drawerWidth?: string;
+  classNameToolbar?: string;
   miniDrawerWidth?: string;
   toolbarContent?: React.ReactNode;
   showToolbar?: boolean;
@@ -65,6 +66,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   bottomBarItems,
   showBottomBar = true,
   className = "",
+  classNameToolbar = "",
   breakpoint = 1024,
   rtl = false,
 }) => {
@@ -107,17 +109,20 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
     const isExpanded = expandedMenuItems.includes(item.id);
     if (item.divider) {
       return (
-        <li key={item.id} className="divider divider-start divider-primary">{item.label}</li>
+        <li key={item.id} className="divider divider-start">
+          {item.label}
+        </li>
       );
     }
-    
+
     const itemContent = (
       <div
         className={`
           flex items-center gap-3 py-2 px-4 rounded 
           ${pathName === item.href ? `${activeClass}` : `hover:${hoverClass}`} 
+          
           transition-colors cursor-pointer
-          ${level > 0 ? "ml-4" : ""}
+          ${level > 0 ? "mr-4 " : ""}
         `}
       >
         {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
@@ -133,7 +138,8 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
         className={`
           flex items-center gap-3 py-2 px-4 rounded 
           transition-colors cursor-pointer
-          ${level > 0 ? "ml-4" : ""}
+          ${isExpanded && item.children && `bg-gray-200`} 
+          ${level > 0 ? "mr-2" : ""}
         `}
         onClick={() => {
           toggleMenuItem(item.id);
@@ -142,7 +148,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
         {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
 
         {(!miniDrawer || !isDesktop || !isDrawerOpen) && (
-          <span className="truncate">{item.label}</span>
+          <span className="truncate ">{item.label}</span>
         )}
 
         {hasChildren && !miniDrawer && (
@@ -272,7 +278,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
       >
         {/* Toolbar */}
         {showToolbar && (
-          <Toolbar elevated={elevatedToolbar}>
+          <Toolbar elevated={elevatedToolbar} className={`${classNameToolbar}`}>
             {showDrawer && (
               <>
                 {/* Mobile menu button */}

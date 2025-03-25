@@ -54,14 +54,14 @@ const Menu: React.FC<MenuProps> = ({ trigger, items, position = "right" }) => {
                   ) : item.href ? (
                     <Link
                       href={item.href}
-                      className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-base-300"
+                      className="w-full flex items-center gap-2 p-4 rounded-md hover:bg-base-300"
                     >
                       {item.icon && <span>{item.icon}</span>}
                       {item.label}
                     </Link>
                   ) : (
                     <button
-                      className="w-full flex items-center gap-2 p-2 rounded-md hover:bg-base-300"
+                      className="w-full flex items-center gap-2 p-4 rounded-md hover:bg-base-300"
                       onClick={() => {
                         if (!item.disabled) {
                           item.onClick?.();
