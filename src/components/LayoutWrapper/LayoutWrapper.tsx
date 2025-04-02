@@ -213,7 +213,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
       {/* Fixed Desktop Drawer */}
       {showDrawer && isDesktop && (
         <div
-          className={`fixed top-0 ${
+          className={`fixed print:hidden top-0 ${
             rtl ? "right-0" : "left-0"
           } h-full transition-all duration-300`}
           style={{

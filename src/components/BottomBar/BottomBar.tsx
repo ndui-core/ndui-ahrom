@@ -142,6 +142,7 @@ const BottomBar: React.FC<BottomBarProps> = ({
           className={`
             fixed bottom-0 left-0 right-0
             bg-base-100
+            print:hidden
             ${elevated ? 'shadow-[0_-2px_4px_0_rgba(0,0,0,0.1)]' : ''}
             ${bordered ? 'border-t border-base-300' : ''}
             z-50

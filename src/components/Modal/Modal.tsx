@@ -8,7 +8,7 @@ interface ModalProps {
   title?: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
   parentId?: string; // For nested modals
   onExited?: () => void;
 }
@@ -30,6 +30,8 @@ const Modal: React.FC<ModalProps> = ({
     sm: "max-w-sm",
     md: "max-w-md",
     lg: "max-w-lg",
+    xl: "max-w-xl",
+    '2xl': "max-w-2xl",
   }[size];
 
   useEffect(() => {
@@ -85,7 +87,8 @@ const Modal: React.FC<ModalProps> = ({
       transition={{ duration: 0.2 }}
       className={`modal-box ${sizeClass} bg-white !p-2`}
       style={{
-        "scrollbarWidth": "none"
+        scrollbarWidth: "none",
+        maxHeight: '75%'
       }}
       role="dialog"
       aria-modal="true"
@@ -114,7 +117,7 @@ const Modal: React.FC<ModalProps> = ({
       {isOpen && (
         <FocusTrap>
           <div
-            className="modal modal-open"
+            className="modal modal-open "
             style={{ zIndex: parentId ? 100 : 50 }}
           >
             {modalContent}

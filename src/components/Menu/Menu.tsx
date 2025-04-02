@@ -41,7 +41,7 @@ const Menu: React.FC<MenuProps> = ({ trigger, items, position = "right" }) => {
 
       {isOpen && (
         <ul
-          className={`menu dropdown-content bg-white rounded-box z-50 mt-2 w-52 p-2 shadow-sm`}
+          className={`menu dropdown-content bg-white rounded-box z-50 mt-2 w-52 p-2 shadow-lg`}
         >
           {items.map((item, index) => (
             <div key={index}>
@@ -54,14 +54,14 @@ const Menu: React.FC<MenuProps> = ({ trigger, items, position = "right" }) => {
                   ) : item.href ? (
                     <Link
                       href={item.href}
-                      className="w-full flex items-center gap-2 p-4 rounded-md hover:bg-base-300"
+                      className="w-full flex items-center gap-2 p-3 rounded-md hover:bg-base-300"
                     >
                       {item.icon && <span>{item.icon}</span>}
                       {item.label}
                     </Link>
                   ) : (
                     <button
-                      className="w-full flex items-center gap-2 p-4 rounded-md hover:bg-base-300"
+                      className="w-full flex items-center gap-2 p-3 rounded-md hover:bg-base-300"
                       onClick={() => {
                         if (!item.disabled) {
                           item.onClick?.();
