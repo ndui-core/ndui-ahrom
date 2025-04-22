@@ -1,27 +1,41 @@
-import React from 'react';
+import React from "react";
+import { useFormContext } from "react-hook-form";
 
-interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface CheckboxProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+  name: string;
   label?: string;
-  error?: string;
   className?: string;
 }
 
 const Checkbox: React.FC<CheckboxProps> = ({
+  name,
   label,
-  error,
-  className = '',
+  className = "",
   ...props
 }) => {
+  const methods = useFormContext() ?? {
+    register: () => ({}),
+    formState: { errors: {} },
+  };
+  const {
+    register,
+    formState: { errors },
+  } = methods;
+  const error = errors[name]?.message as string | undefined;
+
+  const registerOptions = { valueAsNumber: true };
+
   return (
     <div className="form-control">
-      <label className="label cursor-pointer">
+      <label className="label cursor-pointer justify-start">
         <input
           type="checkbox"
-          className={`checkbox ${error ? 'checkbox-error' : ''} ${className}`}
+          {...register(name, registerOptions)}
+          className={`checkbox ${error ? "checkbox-error" : ""} ${className}`}
           {...props}
         />
-        {label && <span className="label-text ml-2">{label}</span>}
-        
+        {label && <span className="label-text mx-2">{label}</span>}
       </label>
       {error && (
         <label className="label">
