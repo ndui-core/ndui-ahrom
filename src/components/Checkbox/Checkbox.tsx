@@ -24,14 +24,13 @@ const Checkbox: React.FC<CheckboxProps> = ({
   } = methods;
   const error = errors[name]?.message as string | undefined;
 
-  const registerOptions = { valueAsNumber: true };
 
   return (
     <div className="form-control">
       <label className="label cursor-pointer justify-start">
         <input
           type="checkbox"
-          {...register(name, registerOptions)}
+          {...register(name)}
           className={`checkbox ${error ? "checkbox-error" : ""} ${className}`}
           {...props}
         />

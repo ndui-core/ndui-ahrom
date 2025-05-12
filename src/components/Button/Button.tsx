@@ -4,6 +4,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "accent" | "ghost" | "link";
   size?: "xs" | "sm" | "md" | "lg";
   loading?: boolean;
+  outline?: boolean;
   fullWidth?: boolean;
   icon?: React.ReactNode;
   iconPosition?: "left" | "right";
@@ -13,6 +14,7 @@ const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   size = "md",
   loading = false,
+  outline = false,
   fullWidth = false,
   icon,
   iconPosition = "left",
@@ -28,6 +30,7 @@ const Button: React.FC<ButtonProps> = ({
     size !== "md" && `btn-${size}`,
     fullWidth && "w-full",
     loading && "loading",
+    outline && "btn-outline",
     className
   ].filter(Boolean).join(" ");
 
